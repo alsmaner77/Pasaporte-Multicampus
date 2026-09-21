@@ -176,27 +176,25 @@ const appContent = document.getElementById('app-content');
 
 // Lógica de Registro
 btnRegister.addEventListener('click', async () => {
-    // Truco: Agregamos un dominio al número para que Firebase lo acepte
     const correoFalso = numeroInput.value + "@pasaporte.edu"; 
-    
+
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, correoFalso, passwordInput.value);
         const user = userCredential.user;
-        
-        // Guardar en Firestore
+
         await setDoc(doc(db, "usuarios", user.uid), {
-            numero_usuario: numeroInput.value, // Guardamos el número real
+            numero_usuario: numeroInput.value,
             campus: campusSelect.value,
             fecha_registro: new Date().toISOString(),
             retos_completados: 0
         });
-        
+
     } catch (error) {
-        errorMsg.textContent = "Error al registrar: Verifica que el número no exista y la contraseña tenga 6+ letras.";
+        // Ahora el texto mostrará el error real
+        errorMsg.textContent = "Error de Firebase: " + error.code;
         errorMsg.style.display = "block";
     }
 });
-
 // Lógica de Inicio de Sesión
 btnLogin.addEventListener('click', async () => {
     // Debemos armar el mismo correo falso para poder iniciar sesión
