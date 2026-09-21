@@ -11,7 +11,7 @@
     <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f7f6; width: 100%;">
         <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center;">
             <h2 style="color: #003366;">Ingreso al Pasaporte</h2>
-            <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
+            <input type="text" id="numero-usuario" placeholder="Número de Usuario" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
             <input type="password" id="password" placeholder="Contraseña" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
             
             <select id="campus-select" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
@@ -136,6 +136,101 @@
         
     </div> <!-- Fin del contenedor principal -->
 
-    <script src="Java.js"></script>
+   
+
+    <script type="module">
+  // 1. Importar los módulos de Firebase directamente (CDN)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 2. Tu configuración de Firebase (Cópiala de la consola)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBvZnYnTt3bPomKyTCkmO5ofaMuqmYKloM",
+    authDomain: "pasaporte-multicampus.firebaseapp.com",
+    projectId: "pasaporte-multicampus",
+    storageBucket: "pasaporte-multicampus.firebasestorage.app",
+    messagingSenderId: "983073027756",
+    appId: "1:983073027756:web:1188de6539a3f74c449109",
+    measurementId: "G-PWW6HDP11B"
+
+  };
+
+  // 3. Inicializar Firebase, Auth y Firestore
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Asegúrate de tener tus importaciones y tu firebaseConfig al inicio del archivo...
+
+// Nuevas referencias (nota que cambiamos 'email' por 'numero-usuario')
+const numeroInput = document.getElementById('numero-usuario');
+const passwordInput = document.getElementById('password');
+const campusSelect = document.getElementById('campus-select');
+const btnLogin = document.getElementById('btn-login');
+const btnRegister = document.getElementById('btn-register');
+const errorMsg = document.getElementById('auth-error');
+
+const loginScreen = document.getElementById('login-screen');
+const appContent = document.getElementById('app-content'); 
+
+// Lógica de Registro
+btnRegister.addEventListener('click', async () => {
+    // Truco: Agregamos un dominio al número para que Firebase lo acepte
+    const correoFalso = numeroInput.value + "@pasaporte.edu"; 
+    
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, correoFalso, passwordInput.value);
+        const user = userCredential.user;
+        
+        // Guardar en Firestore
+        await setDoc(doc(db, "usuarios", user.uid), {
+            numero_usuario: numeroInput.value, // Guardamos el número real
+            campus: campusSelect.value,
+            fecha_registro: new Date().toISOString(),
+            retos_completados: 0
+        });
+        
+    } catch (error) {
+        errorMsg.textContent = "Error al registrar: Verifica que el número no exista y la contraseña tenga 6+ letras.";
+        errorMsg.style.display = "block";
+    }
+});
+
+// Lógica de Inicio de Sesión
+btnLogin.addEventListener('click', async () => {
+    // Debemos armar el mismo correo falso para poder iniciar sesión
+    const correoFalso = numeroInput.value + "@pasaporte.edu";
+    
+    try {
+        await signInWithEmailAndPassword(auth, correoFalso, passwordInput.value);
+    } catch (error) {
+        errorMsg.textContent = "Número de usuario o contraseña incorrectos.";
+        errorMsg.style.display = "block";
+    }
+});
+  // 6. Observador del estado de autenticación
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // Usuario logueado: Ocultar login, mostrar app
+        loginScreen.style.display = 'none';
+        appContent.style.display = 'block'; 
+
+        // Recuperar datos de Firestore
+        const docRef = doc(db, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const datosUsuario = docSnap.data();
+            console.log("Datos del estudiante:", datosUsuario);
+        }
+    } else {
+        // No hay usuario: Mostrar login
+        loginScreen.style.display = 'flex';
+        appContent.style.display = 'none';
+    }
+});
+</script>
+<script type="module" src="Java.js"></script>
 </body>
 </html>
