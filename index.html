@@ -205,8 +205,10 @@ btnLogin.addEventListener('click', async () => {
     try {
         await signInWithEmailAndPassword(auth, correoFalso, passwordInput.value);
     } catch (error) {
-        errorMsg.textContent = "Número de usuario o contraseña incorrectos.";
+        // Esto te mostrará el error exacto (ej. auth/email-already-in-use)
+        errorMsg.textContent = "Error real de Firebase: " + error.code; 
         errorMsg.style.display = "block";
+        console.error("Detalle completo:", error);
     }
 });
   // 6. Observador del estado de autenticación
