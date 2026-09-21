@@ -1,0 +1,156 @@
+:root {
+    --primary-color: #003366; /* Azul institucional */
+    --secondary-color: #00CC99; /* Verde de progreso */
+    --bg-color: #f4f7f6;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+header p { margin: 0; font-size: 1.1rem; opacity: 0.9; }
+
+.progress-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 25px;
+    width: 100%;
+    height: 25px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background-color: var(--secondary-color);
+    height: 100%;
+    width: 0%;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    line-height: 25px;
+    transition: width 0.5s ease-in-out;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.challenge-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--primary-color);
+}
+
+.challenge-card button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.challenge-card button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.badge {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.badge.locked {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.badge.unlocked {
+    filter: grayscale(0%);
+    opacity: 1;
+    border: 2px solid var(--secondary-color);
+}
+
+.badge .icon { font-size: 3rem; margin-bottom: 10px; }
+.badge p { font-weight: bold; margin: 0 0 5px 0; }
+.badge small { color: #666; }
+
+.map-container {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#connections-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#connections-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+#connections-list li::before {
+    content: "📍 ";
+}
+.empty-state::before { content: "" !important; }
