@@ -351,17 +351,18 @@ const chatMessagesContainer = document.getElementById('chat-messages');
 
 let unsubscribeInbox = null;
 
+let unsubscribeInbox = null;
+
 function cargarBandejaEntrada() {
     if (!auth.currentUser) return;
     const myUid = auth.currentUser.uid;
 
-    // Buscar chats donde yo sea uno de los participantes, ordenados por actividad
+    // 1. Quitamos el orderBy para que Firebase no bloquee la búsqueda por falta de índices
     const chatsRef = collection(db, "chats");
-    const qInbox = query(chatsRef, where("participantes", "array-contains", myUid), orderBy("fecha_actualizacion", "desc"));
+    const qInbox = query(chatsRef, where("participantes", "array-contains", myUid));
 
     if (unsubscribeInbox) unsubscribeInbox();
 
-    // onSnapshot actualizará la lista al instante si alguien nos habla o creamos un chat
     unsubscribeInbox = onSnapshot(qInbox, async (snapshot) => {
         const chatsList = document.getElementById('chats-list');
         const emptyMsg = document.getElementById('empty-chats-msg');
@@ -370,37 +371,37 @@ function cargarBandejaEntrada() {
 
         if (snapshot.empty) {
             if (emptyMsg) emptyMsg.style.display = 'block';
-            // Borrar todo menos el mensaje de vacío
             Array.from(chatsList.children).forEach(child => {
                 if (child.id !== 'empty-chats-msg') child.remove();
             });
             return;
         }
 
-        // Si hay chats, ocultamos el mensaje de vacío
         if (emptyMsg) emptyMsg.style.display = 'none';
 
-        // Limpiar la lista actual antes de re-dibujar
         Array.from(chatsList.children).forEach(child => {
             if (child.id !== 'empty-chats-msg') child.remove();
         });
 
-        // Dibujar cada conversación
-        for (const docSnap of snapshot.docs) {
+        // 2. Ordenamos los chats desde JavaScript (del más reciente al más antiguo)
+        const docsOrdenados = snapshot.docs.sort((a, b) => {
+            const tiempoA = a.data().fecha_actualizacion?.toMillis() || 0;
+            const tiempoB = b.data().fecha_actualizacion?.toMillis() || 0;
+            return tiempoB - tiempoA;
+        });
+
+        // 3. Dibujar cada conversación usando el arreglo ya ordenado
+        for (const docSnap of docsOrdenados) {
             const chatData = docSnap.data();
             const chatId = docSnap.id;
 
-            // Identificar quién es el otro estudiante
             const partnerUid = chatData.participantes.find(uid => uid !== myUid);
-
-            // Obtener los datos del otro estudiante (Nombre, foto, campus)
             const partnerRef = doc(db, "usuarios", partnerUid);
             const partnerSnap = await getDoc(partnerRef);
             
             if (partnerSnap.exists()) {
                 const partnerData = partnerSnap.data();
                 
-                // Crear la tarjeta de contacto para la lista
                 const li = document.createElement('li');
                 li.style.padding = "15px";
                 li.style.backgroundColor = "white";
@@ -413,7 +414,6 @@ function cargarBandejaEntrada() {
                 li.style.marginBottom = "10px";
                 li.style.transition = "background-color 0.2s";
 
-                // Efecto hover simple
                 li.onmouseover = () => li.style.backgroundColor = "#f4f7f6";
                 li.onmouseout = () => li.style.backgroundColor = "white";
 
@@ -429,7 +429,6 @@ function cargarBandejaEntrada() {
                     </div>
                 `;
 
-                // Al hacer clic en la tarjeta, abrimos el chat
                 li.addEventListener('click', () => {
                     abrirSalaDeChat(chatId, partnerData);
                 });
