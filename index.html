@@ -252,6 +252,17 @@ onAuthStateChanged(auth, async (user) => {
         if (docSnap.exists()) {
             const datosUsuario = docSnap.data();
             console.log("Datos del estudiante:", datosUsuario);
+            
+            // Inyectar datos en la pantalla de Perfil
+            profileEmail.textContent = datosUsuario.correo || user.email;
+            profileCampus.textContent = "Campus: " + (datosUsuario.campus || "No definido");
+            
+            // Cargar la foto de perfil si existe
+            if (datosUsuario.foto_perfil) {
+                profilePic.src = datosUsuario.foto_perfil;
+            } else {
+                profilePic.src = "https://via.placeholder.com/150"; // Foto por defecto
+            }
         }
     } else {
         // No hay usuario: Mostrar login
