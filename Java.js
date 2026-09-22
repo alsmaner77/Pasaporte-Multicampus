@@ -351,8 +351,6 @@ const chatMessagesContainer = document.getElementById('chat-messages');
 
 let unsubscribeInbox = null;
 
-let unsubscribeInbox = null;
-
 function cargarBandejaEntrada() {
     if (!auth.currentUser) return;
     const myUid = auth.currentUser.uid;
