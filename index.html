@@ -46,6 +46,8 @@
             <button class="tab-btn active" onclick="openTab(event, 'retos')">Retos Semanales</button>
             <button class="tab-btn" onclick="openTab(event, 'mapa')">Mapa y Conexiones</button>
             <button class="tab-btn" onclick="openTab(event, 'insignias')">Insignias</button>
+            <button class="tab-btn" onclick="openTab(event, 'conexion')">🎲 Descubrir</button>
+            <button class="tab-btn" onclick="openTab(event, 'mensajes')">✉️ Mensajes</button>
             <button class="tab-btn" onclick="openTab(event, 'perfil')">👤 Mi Perfil</button>
         </nav>
 
@@ -129,6 +131,58 @@
                     <div class="icon">🗺️</div>
                     <p>Explorador Nacional</p>
                     <small>Completa el pasaporte</small>
+                </div>
+            </div>
+        </section>
+            
+            <!-- PESTAÑA: Descubrir (Solo para buscar nuevos compañeros) -->
+        <section id="conexion" class="tab-content">
+            <h2>Conexión Aleatoria</h2>
+            <div style="text-align: center; padding: 40px; background: white; border-radius: 10px; border: 1px solid #ddd;">
+                <p style="font-size: 16px; margin-bottom: 20px;">Anímate a conocer a alguien nuevo. Te conectaremos con un estudiante de un campus distinto al tuyo para ampliar tu red.</p>
+                <button id="btn-find-partner" style="padding: 15px 30px; background-color: #FFC000; color: #003366; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    🎲 Buscar Nuevo Compañero
+                </button>
+                <p id="search-status" style="display: none; color: #003366; margin-top: 15px; font-weight: bold;">Buscando en la base de datos...</p>
+            </div>
+        </section>
+
+        <!-- PESTAÑA: Mensajes (Bandeja de entrada y Sala de Chat) -->
+        <section id="mensajes" class="tab-content">
+            <h2>Mis Conversaciones</h2>
+
+            <!-- VISTA 1: Lista de Chats (Bandeja de entrada) -->
+            <div id="inbox-view">
+                <ul id="chats-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                    <li id="empty-chats-msg" style="color: #666; text-align: center; padding: 30px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                        Aún no tienes mensajes. ¡Ve a la pestaña "Descubrir" para conocer a alguien!
+                    </li>
+                    <!-- Las tarjetas de contacto se inyectarán aquí con JavaScript -->
+                </ul>
+            </div>
+
+            <!-- VISTA 2: Sala de Chat Privada (Oculta por defecto) -->
+            <div id="chat-room-view" style="display: none; flex-direction: column; height: 500px; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: white;">
+                
+                <!-- Encabezado del chat -->
+                <div style="background-color: #003366; color: white; padding: 15px; display: flex; align-items: center; gap: 15px;">
+                    <button id="btn-back-to-inbox" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin-right: 5px;">⬅</button>
+                    <img id="chat-partner-pic" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                    <div>
+                        <h3 id="chat-partner-email" style="margin: 0; font-size: 16px;">Estudiante</h3>
+                        <p id="chat-partner-campus" style="margin: 0; font-size: 12px; opacity: 0.8;">Campus</p>
+                    </div>
+                </div>
+
+                <!-- Contenedor de los mensajes -->
+                <div id="chat-messages" style="flex: 1; padding: 15px; overflow-y: auto; background-color: #f4f7f6; display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Los globos de chat aparecerán aquí -->
+                </div>
+
+                <!-- Caja de texto -->
+                <div style="padding: 15px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px;">
+                    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none;">
+                    <button id="btn-send-message" style="padding: 10px 20px; background-color: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Enviar</button>
                 </div>
             </div>
         </section>
