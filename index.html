@@ -8,24 +8,86 @@
 </head>
 <body>
     <!-- Pantalla de Login / Registro (SE QUEDA IGUAL, VISIBLE POR DEFECTO) -->
-    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f7f6; width: 100%;">
-        <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center;">
-            <h2 style="color: #003366;">Ingreso al Pasaporte</h2>
-            <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
-            <input type="password" id="password" placeholder="Contraseña" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
-            
-            <select id="campus-select" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
-                <option value="Monterrey">Monterrey</option>
+    <!-- Contenedor principal de autenticación -->
+<div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f7f6;">
+    
+    <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center;">
+        <h2 id="auth-title" style="color: #003366; margin-bottom: 20px;">Ingreso al Pasaporte</h2>
+        
+        <!-- Formulario Base (Siempre visible) -->
+        <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
+        <input type="password" id="password" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
+        
+        <!-- Campos extra exclusivos para Registro (Ocultos por defecto) -->
+        <div id="register-fields" style="display: none;">
+            <select id="campus-select" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
+                <option value="" disabled selected>Selecciona tu Campus</option>
+                <option value="Aguascalientes">Aguascalientes</option>
+                <option value="Chihuahua">Chihuahua</option>
+                <option value="Ciudad Juárez">Ciudad Juárez</option>
+                <option value="Ciudad Obregón">Ciudad Obregón</option>
+                <option value="Cuautitlán Izcalli">Cuautitlán Izcalli</option>
+                <option value="Cuernavaca">Cuernavaca</option>
+                <option value="Culiacán">Culiacán</option>
+                <option value="Cumbres">Cumbres</option>
+                <option value="Durango">Durango</option>
+                <option value="Ferrería">Ferrería</option>
                 <option value="Guadalajara">Guadalajara</option>
+                <option value="Guadalupe">Guadalupe</option>
+                <option value="Hermosillo">Hermosillo</option>
+                <option value="Laguna">Laguna</option>
+                <option value="Las Torres">Las Torres</option>
+                <option value="Los Mochis">Los Mochis</option>
+                <option value="Mazatlán">Mazatlán</option>
+                <option value="Morelia">Morelia</option>
+                <option value="Nuevo Laredo">Nuevo Laredo</option>
                 <option value="Puebla">Puebla</option>
                 <option value="Querétaro">Querétaro</option>
+                <option value="Reynosa">Reynosa</option>
+                <option value="San Luis Potosí">San Luis Potosí</option>
+                <option value="San Nicolás">San Nicolás</option>
+                <option value="Tampico">Tampico</option>
+                <option value="Tijuana">Tijuana</option>
+                <option value="Toluca">Toluca</option>
+                <option value="Veracruz">Veracruz</option>
+                <option value="Villahermosa">Villahermosa</option>
+                <option value="Zacatecas">Zacatecas</option>
+                <option value="Zapopan">Zapopan</option>
             </select>
 
-            <button id="btn-login" style="width: 100%; padding: 10px; background-color: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px;">Iniciar Sesión</button>
-            <button id="btn-register" style="width: 100%; padding: 10px; background-color: #FFC000; color: #003366; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Registrarse</button>
-            <p id="auth-error" style="color: red; font-size: 0.9em; display: none;"></p>
+            <select id="carrera-select" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
+                <option value="" disabled selected>Selecciona tu Carrera</option>
+                <option value="Ingeniería en Desarrollo de Software">Ingeniería en Desarrollo de Software</option>
+                <option value="Ingeniería en Logística y Cadena de Suministro">Ingeniería en Logística y Cadena de Suministro</option>
+                <option value="Ingeniería en Mecatrónica">Ingeniería en Mecatrónica</option>
+                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                <option value="Licenciatura en Administración de Empresas">Licenciatura en Administración de Empresas</option>
+                <option value="Licenciatura en Comercio y Negocios Internacionales">Licenciatura en Comercio y Negocios Internacionales</option>
+                <option value="Licenciatura en Contabilidad y Estrategia Financiera">Licenciatura en Contabilidad y Estrategia Financiera</option>
+                <option value="Licenciatura en Creación y Desarrollo de Empresas">Licenciatura en Creación y Desarrollo de Empresas</option>
+                <option value="Licenciatura en Derecho">Licenciatura en Derecho</option>
+                <option value="Licenciatura en Diseño Gráfico y Animación">Licenciatura en Diseño Gráfico y Animación</option>
+                <option value="Licenciatura en Enfermería">Licenciatura en Enfermería</option>
+                <option value="Licenciatura en Gastronomía Internacional">Licenciatura en Gastronomía Internacional</option>
+                <option value="Licenciatura en Mercadotecnia">Licenciatura en Mercadotecnia</option>
+                <option value="Licenciatura en Nutrición">Licenciatura en Nutrición</option>
+                <option value="Licenciatura en Psicología">Licenciatura en Psicología</option>
+            </select>
         </div>
+
+        <p id="auth-error" style="color: red; font-size: 14px; display: none; margin-bottom: 15px;"></p>
+
+        <!-- Botones de Acción (Se alternan vía JavaScript) -->
+        <button id="btn-login-action" style="width: 100%; padding: 12px; background-color: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 15px;">Iniciar Sesión</button>
+        <button id="btn-register-action" style="width: 100%; padding: 12px; background-color: #FFC000; color: #003366; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: none; margin-bottom: 15px;">Crear Cuenta</button>
+
+        <!-- Links para alternar vistas -->
+        <p style="font-size: 14px; margin-top: 10px; color: #666;">
+            <span id="text-toggle">¿No tienes cuenta?</span> 
+            <a href="#" id="link-toggle" style="color: #00CC99; text-decoration: none; font-weight: bold; margin-left: 5px;">Regístrate aquí</a>
+        </p>
     </div>
+</div>
 
     <!-- CONTENEDOR PRINCIPAL DE LA APP (OCULTO POR DEFECTO) -->
     <div id="app-content" style="display: none;">
