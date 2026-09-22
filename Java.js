@@ -578,20 +578,20 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
                 msgDiv.style.color = "#333333";
             }
 
-            // Adentro de tu ciclo que dibuja mensajes en la pantalla del chat
-            let contenidoMensaje = mensajeData.texto;
+            // CORRECCIÓN: Usar msgData y msgDiv correctamente
+            let contenidoMensaje = msgData.texto;
             
-            // Si el mensaje tiene una imagen, la mostramos en miniatura
-            if (mensajeData.imagenUrl) {
-                contenidoMensaje = `<img src="${mensajeData.imagenUrl}" style="max-width: 200px; border-radius: 8px; margin-top: 5px;">`;
+            // Si el mensaje tiene una imagen, la mostramos
+            if (msgData.imagenUrl) {
+                contenidoMensaje = `<img src="${msgData.imagenUrl}" style="max-width: 200px; border-radius: 8px; margin-top: 5px; display: block;">`;
             }
             
-            // Y luego inyectas 'contenidoMensaje' en el div del globo de chat
-            div.innerHTML = contenidoMensaje;
+            // Inyectamos el contenido en el globo
+            msgDiv.innerHTML = contenidoMensaje;
             chatMessagesContainer.appendChild(msgDiv);
         });
         
-        // Hacer scroll automático hacia abajo cuando llega un mensaje
+        // Hacer scroll automático hacia abajo
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
     });
 };
