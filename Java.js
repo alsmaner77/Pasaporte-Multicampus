@@ -564,3 +564,36 @@ document.getElementById('btn-back-to-inbox').addEventListener('click', () => {
     document.getElementById('chat-room-view').style.display = 'none';
     document.getElementById('inbox-view').style.display = 'block';
 });
+
+// Referencia al botón de videollamada
+const btnVideoCall = document.getElementById('btn-video-call');
+
+btnVideoCall.addEventListener('click', async () => {
+    if (!currentChatId) return;
+
+    // 1. Crear un nombre de sala único y seguro basado en el ID del chat
+    // Eliminamos los guiones bajos para que Jitsi lo acepte sin problemas
+    const roomName = "Pasaporte" + currentChatId.replace(/_/g, "");
+    const jitsiUrl = `https://meet.jit.si/${roomName}`;
+
+    // 2. Abrir la videollamada en una nueva pestaña
+    window.open(jitsiUrl, '_blank');
+
+    // 3. Enviar un mensaje automático al chat para avisar al compañero
+    try {
+        const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
+        await addDoc(mensajesRef, {
+            texto: `📹 ¡He iniciado una videollamada! Presiona el botón verde de "Llamar" arriba para unirte.`,
+            senderId: auth.currentUser.uid,
+            timestamp: serverTimestamp()
+        });
+
+        const chatRef = doc(db, "chats", currentChatId);
+        await updateDoc(chatRef, {
+            ultimo_mensaje: "📹 Invitación a videollamada",
+            fecha_actualizacion: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Error al enviar la invitación de video:", error);
+    }
+});
