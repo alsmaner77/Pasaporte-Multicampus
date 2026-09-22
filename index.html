@@ -350,14 +350,22 @@
                     <!-- Los globos de chat aparecerán aquí -->
                 </div>
 
-                <!-- Caja de texto -->                
+                <!-- Caja de texto -->              
                 <div style="padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; background-color: #f4f7f6;">
                     
-                    <!-- Input oculto para seleccionar archivos -->
+                    <!-- Input oculto 1: Galería de imágenes -->
                     <input type="file" id="chat-img-input" accept="image/*" style="display: none;">
                     
-                    <!-- Botón para abrir la galería -->
-                    <button id="btn-attach-img" style="background-color: #e9ecef; border: 1px solid #ccc; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                    <!-- Input oculto 2: Cámara en vivo (El atributo 'capture' abre la cámara en celulares) -->
+                    <input type="file" id="chat-camera-input" accept="image/*" capture="environment" style="display: none;">
+                    
+                    <!-- Botón de Galería -->
+                    <button id="btn-attach-img" style="background-color: #e9ecef; border: 1px solid #ccc; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 16px;" title="Enviar imagen de galería">
+                        🖼️
+                    </button>
+                
+                    <!-- Botón de Cámara -->
+                    <button id="btn-take-photo" style="background-color: #e9ecef; border: 1px solid #ccc; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 16px;" title="Tomar foto ahora">
                         📷
                     </button>
                 
