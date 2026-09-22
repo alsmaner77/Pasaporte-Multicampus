@@ -46,6 +46,8 @@ window.openTab = function(evt, tabName) {
 
 // 3. LÓGICA DE LOS RETOS Y GUARDADO EN FIRESTORE
 window.completeChallenge = async function(challengeId, badgeName, progressIncrease) {
+    console.log("¡Se hizo clic en el reto:", challengeId, "!"); // <-- Esto nos dirá si el botón al menos ejecuta la función
+
     if (!auth.currentUser) {
         alert("Debes iniciar sesión para registrar el reto.");
         return;
@@ -60,6 +62,7 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
             [`retos_completados.${challengeId}`]: true,
             progreso_porcentaje: progress + progressIncrease
         });
+        console.log("Progreso guardado en Firestore con éxito.");
 
         // Actualizar botón del reto
         const btn = document.querySelector(`#reto-${challengeId} button`);
@@ -113,7 +116,8 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
         }
 
     } catch (error) {
-        console.error("Error al guardar el reto:", error);
-        alert("Hubo un error al guardar tu progreso en la base de datos.");
+        // AQUÍ VEREMOS EL ERROR REAL SI FIREBASE LO RECHAZA
+        console.error("Error detallado al guardar el reto:", error);
+        alert("Hubo un error al guardar tu progreso. Revisa la consola.");
     }
 };
