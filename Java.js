@@ -17,6 +17,19 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Referencias nuevas para imágenes
+const chatImgInput = document.getElementById('chat-img-input');
+const btnAttachImg = document.getElementById('btn-attach-img');
+
+// Variable para el modelo de IA
+let aiModel = null;
+
+// Cargar la IA en segundo plano al iniciar la página
+mobilenet.load().then(model => {
+    aiModel = model;
+    console.log("IA de reconocimiento de imágenes cargada y lista.");
+});
+
 // Variables de estado globales
 let progress = 0;
 let completedChallenges = 0;
@@ -708,3 +721,84 @@ async function actualizarMapaConexiones() {
         console.error("Error al actualizar el mapa:", error);
     }
 }
+
+// Al presionar el botón de cámara, simulamos un clic en el input de archivo
+btnAttachImg.addEventListener('click', () => chatImgInput.click());
+
+// Cuando el usuario selecciona una imagen
+chatImgInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentChatId) return;
+
+    // Mostrar estado de "Analizando..."
+    const originalPlaceholder = document.getElementById('chat-input').placeholder;
+    document.getElementById('chat-input').placeholder = "Analizando imagen con IA...";
+    btnAttachImg.disabled = true;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async (event) => {
+        const base64Img = event.target.result;
+
+        // 1. Crear un elemento de imagen temporal para la IA
+        const imgElement = document.createElement('img');
+        imgElement.src = base64Img;
+        
+        imgElement.onload = async () => {
+            // 2. Pasar la imagen por la Inteligencia Artificial
+            if (aiModel) {
+                const predictions = await aiModel.classify(imgElement);
+                console.log("Predicciones de la IA:", predictions);
+
+                // Traducimos categorías de MobileNet a un concepto general de "Comida"
+                const foodKeywords = ['food', 'dish', 'plate', 'meal', 'restaurant', 'fruit', 'vegetable', 'meat', 'bread', 'pizza', 'taco', 'guacamole', 'soup'];
+                
+                // Comprobamos si alguna predicción coincide con comida
+                const esComida = predictions.some(pred => 
+                    foodKeywords.some(keyword => pred.className.toLowerCase().includes(keyword))
+                );
+
+                if (esComida) {
+                    console.log("¡Platillo detectado!");
+                    // Validar si el reto 3 ya estaba completado
+                    const myUserRef = doc(db, "usuarios", auth.currentUser.uid);
+                    const myUserSnap = await getDoc(myUserRef);
+                    if (myUserSnap.exists()) {
+                        const userData = myUserSnap.data();
+                        if (!userData.retos_completados || !userData.retos_completados[3]) {
+                            // Completar el Reto 3 automáticamente
+                            await window.completeChallenge(3, "México en un plato", 12.5);
+                            alert("🤖 IA: ¡Qué rico se ve! Has completado el Reto 3: México en un plato.");
+                        }
+                    }
+                }
+            }
+
+            // 3. Enviar la imagen como mensaje a Firebase
+            try {
+                const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
+                await addDoc(mensajesRef, {
+                    texto: "📷 Imagen enviada", // Texto alternativo
+                    imagenUrl: base64Img,       // Guardamos la imagen en Base64
+                    senderId: auth.currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+
+                // Actualizar el último mensaje en la bandeja
+                const chatRef = doc(db, "chats", currentChatId);
+                await updateDoc(chatRef, {
+                    ultimo_mensaje: "📷 Imagen",
+                    fecha_actualizacion: serverTimestamp()
+                });
+
+            } catch (error) {
+                console.error("Error al enviar imagen:", error);
+            }
+
+            // Restaurar interfaz
+            document.getElementById('chat-input').placeholder = originalPlaceholder;
+            btnAttachImg.disabled = false;
+            chatImgInput.value = ""; // Limpiar input
+        };
+    };
+});
