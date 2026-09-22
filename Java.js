@@ -17,9 +17,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Referencias nuevas para imágenes
+// Referencias nuevas para imágenes y cámara
 const chatImgInput = document.getElementById('chat-img-input');
+const chatCameraInput = document.getElementById('chat-camera-input');
 const btnAttachImg = document.getElementById('btn-attach-img');
+const btnTakePhoto = document.getElementById('btn-take-photo');
 
 // Variable para el modelo de IA
 let aiModel = null;
@@ -576,7 +578,16 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
                 msgDiv.style.color = "#333333";
             }
 
-            msgDiv.textContent = msgData.texto;
+            // Adentro de tu ciclo que dibuja mensajes en la pantalla del chat
+            let contenidoMensaje = mensajeData.texto;
+            
+            // Si el mensaje tiene una imagen, la mostramos en miniatura
+            if (mensajeData.imagenUrl) {
+                contenidoMensaje = `<img src="${mensajeData.imagenUrl}" style="max-width: 200px; border-radius: 8px; margin-top: 5px;">`;
+            }
+            
+            // Y luego inyectas 'contenidoMensaje' en el div del globo de chat
+            div.innerHTML = contenidoMensaje;
             chatMessagesContainer.appendChild(msgDiv);
         });
         
@@ -722,69 +733,65 @@ async function actualizarMapaConexiones() {
     }
 }
 
-// Al presionar el botón de cámara, simulamos un clic en el input de archivo
+// Abrir galería o cámara según el botón que presionen
 btnAttachImg.addEventListener('click', () => chatImgInput.click());
+btnTakePhoto.addEventListener('click', () => chatCameraInput.click());
 
-// Cuando el usuario selecciona una imagen
-chatImgInput.addEventListener('change', async (e) => {
+// Función maestra para procesar la imagen (sirve para ambos casos)
+const procesarImagenParaChat = async (e) => {
     const file = e.target.files[0];
     if (!file || !currentChatId) return;
 
-    // Mostrar estado de "Analizando..."
+    // Mostrar estado de "Analizando..." y bloquear botones
     const originalPlaceholder = document.getElementById('chat-input').placeholder;
     document.getElementById('chat-input').placeholder = "Analizando imagen con IA...";
     btnAttachImg.disabled = true;
+    btnTakePhoto.disabled = true;
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async (event) => {
         const base64Img = event.target.result;
 
-        // 1. Crear un elemento de imagen temporal para la IA
+        // Crear elemento de imagen para la IA
         const imgElement = document.createElement('img');
         imgElement.src = base64Img;
         
         imgElement.onload = async () => {
-            // 2. Pasar la imagen por la Inteligencia Artificial
+            // 1. EVALUAR CON IA (MobileNet)
             if (aiModel) {
                 const predictions = await aiModel.classify(imgElement);
                 console.log("Predicciones de la IA:", predictions);
 
-                // Traducimos categorías de MobileNet a un concepto general de "Comida"
                 const foodKeywords = ['food', 'dish', 'plate', 'meal', 'restaurant', 'fruit', 'vegetable', 'meat', 'bread', 'pizza', 'taco', 'guacamole', 'soup'];
                 
-                // Comprobamos si alguna predicción coincide con comida
                 const esComida = predictions.some(pred => 
                     foodKeywords.some(keyword => pred.className.toLowerCase().includes(keyword))
                 );
 
                 if (esComida) {
-                    console.log("¡Platillo detectado!");
-                    // Validar si el reto 3 ya estaba completado
                     const myUserRef = doc(db, "usuarios", auth.currentUser.uid);
                     const myUserSnap = await getDoc(myUserRef);
                     if (myUserSnap.exists()) {
                         const userData = myUserSnap.data();
                         if (!userData.retos_completados || !userData.retos_completados[3]) {
-                            // Completar el Reto 3 automáticamente
                             await window.completeChallenge(3, "México en un plato", 12.5);
-                            alert("🤖 IA: ¡Qué rico se ve! Has completado el Reto 3: México en un plato.");
+                            alert("🤖 IA: ¡Qué rico se ve! Has completado el Reto 3.");
                         }
                     }
                 }
             }
 
-            // 3. Enviar la imagen como mensaje a Firebase
+            // 2. ENVIAR A FIREBASE
             try {
                 const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
                 await addDoc(mensajesRef, {
-                    texto: "📷 Imagen enviada", // Texto alternativo
-                    imagenUrl: base64Img,       // Guardamos la imagen en Base64
+                    texto: "📷 Imagen enviada", 
+                    imagenUrl: base64Img,
                     senderId: auth.currentUser.uid,
                     timestamp: serverTimestamp()
                 });
 
-                // Actualizar el último mensaje en la bandeja
                 const chatRef = doc(db, "chats", currentChatId);
                 await updateDoc(chatRef, {
                     ultimo_mensaje: "📷 Imagen",
@@ -795,10 +802,15 @@ chatImgInput.addEventListener('change', async (e) => {
                 console.error("Error al enviar imagen:", error);
             }
 
-            // Restaurar interfaz
+            // 3. RESTAURAR INTERFAZ
             document.getElementById('chat-input').placeholder = originalPlaceholder;
             btnAttachImg.disabled = false;
-            chatImgInput.value = ""; // Limpiar input
+            btnTakePhoto.disabled = false;
+            e.target.value = ""; // Limpiar input para poder subir la misma foto después si se quiere
         };
     };
-});
+};
+
+// Conectar ambos inputs ocultos a la misma función maestra
+chatImgInput.addEventListener('change', procesarImagenParaChat);
+chatCameraInput.addEventListener('change', procesarImagenParaChat);
