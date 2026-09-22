@@ -11,7 +11,7 @@
     <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f7f6; width: 100%;">
         <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; text-align: center;">
             <h2 style="color: #003366;">Ingreso al Pasaporte</h2>
-            <input type="text" id="numero-usuario" placeholder="Número de Usuario" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
+            <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
             <input type="password" id="password" placeholder="Contraseña" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
             
             <select id="campus-select" style="width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box;">
@@ -164,7 +164,7 @@
   // Asegúrate de tener tus importaciones y tu firebaseConfig al inicio del archivo...
 
 // Nuevas referencias (nota que cambiamos 'email' por 'numero-usuario')
-const numeroInput = document.getElementById('numero-usuario');
+const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const campusSelect = document.getElementById('campus-select');
 const btnLogin = document.getElementById('btn-login');
@@ -176,37 +176,33 @@ const appContent = document.getElementById('app-content');
 
 // Lógica de Registro
 btnRegister.addEventListener('click', async () => {
-    const correoFalso = numeroInput.value + "@pasaporte.edu"; 
-
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, correoFalso, passwordInput.value);
+        // Se envía directamente emailInput.value
+        const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
         const user = userCredential.user;
-
+        
+        // Guardar en Firestore con el campo 'correo'
         await setDoc(doc(db, "usuarios", user.uid), {
-            numero_usuario: numeroInput.value,
+            correo: emailInput.value,
             campus: campusSelect.value,
             fecha_registro: new Date().toISOString(),
             retos_completados: 0
         });
-
+        
     } catch (error) {
-        // Ahora el texto mostrará el error real
         errorMsg.textContent = "Error de Firebase: " + error.code;
         errorMsg.style.display = "block";
     }
 });
+
 // Lógica de Inicio de Sesión
 btnLogin.addEventListener('click', async () => {
-    // Debemos armar el mismo correo falso para poder iniciar sesión
-    const correoFalso = numeroInput.value + "@pasaporte.edu";
-    
     try {
-        await signInWithEmailAndPassword(auth, correoFalso, passwordInput.value);
+        // Se envía directamente emailInput.value
+        await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
     } catch (error) {
-        // Esto te mostrará el error exacto (ej. auth/email-already-in-use)
-        errorMsg.textContent = "Error real de Firebase: " + error.code; 
+        errorMsg.textContent = "Error al iniciar sesión: " + error.code;
         errorMsg.style.display = "block";
-        console.error("Detalle completo:", error);
     }
 });
   // 6. Observador del estado de autenticación
