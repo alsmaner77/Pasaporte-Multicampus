@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -20,6 +20,7 @@ const db = getFirestore(app);
 // Variables de estado globales
 let progress = 0;
 let completedChallenges = 0;
+let miCampus = "";
 const mockCities = ["Campus Monterrey", "Campus Guadalajara", "Campus Puebla", "Campus Querétaro"];
 
 // Referencias de la interfaz
@@ -104,6 +105,7 @@ onAuthStateChanged(auth, async (user) => {
         
         if (docSnap.exists()) {
             const datosUsuario = docSnap.data();
+            miCampus = datosUsuario.campus;
             
             // Inyectar datos en perfil sin errores
             if (profileEmail) profileEmail.textContent = datosUsuario.correo || user.email;
@@ -270,3 +272,92 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
         alert("Hubo un error al guardar tu progreso.");
     }
 };
+
+// Referencias de la vista Descubrir
+const btnFindPartner = document.getElementById('btn-find-partner');
+const searchStatus = document.getElementById('search-status');
+
+btnFindPartner.addEventListener('click', async () => {
+    if (!authInstance || !authInstance.currentUser) return;
+
+    // Cambiar estado visual a "buscando"
+    searchStatus.style.display = 'block';
+    searchStatus.textContent = "Buscando en la base de datos...";
+    btnFindPartner.disabled = true;
+
+    try {
+        // 1. Consultar estudiantes de OTROS campus
+        const usuariosRef = collection(dbInstance, "usuarios");
+        const q = query(usuariosRef, where("campus", "!=", miCampus));
+        const querySnapshot = await getDocs(q);
+
+        let posiblesCompaneros = [];
+        querySnapshot.forEach((doc) => {
+            // Asegurarnos de no incluirnos a nosotros mismos por accidente
+            if (doc.id !== authInstance.currentUser.uid) {
+                posiblesCompaneros.push({ id: doc.id, ...doc.data() });
+            }
+        });
+
+        // 2. Validar si hay alguien disponible
+        if (posiblesCompaneros.length === 0) {
+            searchStatus.textContent = "No hay estudiantes de otros campus disponibles en este momento. ¡Intenta más tarde!";
+            btnFindPartner.disabled = false;
+            return;
+        }
+
+        // 3. Selección Aleatoria
+        const randomUser = posiblesCompaneros[Math.floor(Math.random() * posiblesCompaneros.length)];
+
+        // 4. Generar ID único para la sala de chat
+        // Ordenamos los IDs alfabéticamente para que siempre sea el mismo sin importar quién inició el chat
+        const myUid = authInstance.currentUser.uid;
+        const partnerUid = randomUser.id;
+        const chatId = myUid < partnerUid ? `${myUid}_${partnerUid}` : `${partnerUid}_${myUid}`;
+
+        // 5. Crear el documento del chat en Firestore
+        const chatRef = doc(dbInstance, "chats", chatId);
+        await setDoc(chatRef, {
+            participantes: [myUid, partnerUid],
+            ultimo_mensaje: "Chat iniciado",
+            fecha_actualizacion: serverTimestamp()
+        }, { merge: true });
+
+        // 6. Éxito: Limpiar estado y redirigir al chat
+        searchStatus.style.display = 'none';
+        btnFindPartner.disabled = false;
+        
+        // Simular el clic para cambiar a la pestaña de mensajes automáticamente
+        document.querySelector("button[onclick*='mensajes']").click();
+        
+        // Preparar la vista del chat (Función del paso 3)
+        abrirSalaDeChat(chatId, randomUser);
+
+    } catch (error) {
+        console.error("Error en el emparejamiento:", error);
+        searchStatus.textContent = "Hubo un error de conexión. Intenta de nuevo.";
+        btnFindPartner.disabled = false;
+    }
+});
+
+// Función temporal para evitar errores hasta que hagamos el Paso 3
+window.abrirSalaDeChat = function(chatId, partnerData) {
+    console.log("Sala generada con:", partnerData.correo, "ID del chat:", chatId);
+    document.getElementById('inbox-view').style.display = 'none';
+    document.getElementById('chat-room-view').style.display = 'flex';
+    
+    // Llenar datos de la cabecera
+    document.getElementById('chat-partner-email').textContent = partnerData.correo;
+    document.getElementById('chat-partner-campus').textContent = partnerData.campus;
+    
+    const partnerPic = partnerData.foto_perfil && partnerData.foto_perfil.startsWith("data:image") 
+        ? partnerData.foto_perfil 
+        : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23cccccc'/></svg>";
+    document.getElementById('chat-partner-pic').src = partnerPic;
+};
+
+// Configurar botón para volver al inbox
+document.getElementById('btn-back-to-inbox').addEventListener('click', () => {
+    document.getElementById('chat-room-view').style.display = 'none';
+    document.getElementById('inbox-view').style.display = 'block';
+});
