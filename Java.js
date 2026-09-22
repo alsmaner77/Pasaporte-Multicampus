@@ -45,26 +45,28 @@ window.openTab = function(evt, tabName) {
 };
 
 // 3. LÓGICA DE LOS RETOS Y GUARDADO EN FIRESTORE
-window.completeChallenge = async function(challengeId, badgeName, progressIncrease) {
-    console.log("¡Se hizo clic en el reto:", challengeId, "!"); // <-- Esto nos dirá si el botón al menos ejecuta la función
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    if (!auth.currentUser) {
+window.completeChallenge = async function(challengeId, badgeName, progressIncrease) {
+    const authInstance = getAuth();
+    const dbInstance = getFirestore();
+
+    if (!authInstance.currentUser) {
         alert("Debes iniciar sesión para registrar el reto.");
         return;
     }
 
-    const userId = auth.currentUser.uid;
-    const userRef = doc(db, "usuarios", userId);
+    const userId = authInstance.currentUser.uid;
+    const userRef = doc(dbInstance, "usuarios", userId);
 
     try {
-        // Actualizar base de datos
         await updateDoc(userRef, {
             [`retos_completados.${challengeId}`]: true,
             progreso_porcentaje: progress + progressIncrease
         });
-        console.log("Progreso guardado en Firestore con éxito.");
 
-        // Actualizar botón del reto
+        // El resto de tu código de actualización visual...
         const btn = document.querySelector(`#reto-${challengeId} button`);
         if (btn) {
             btn.innerText = "Reto Completado ✅";
@@ -73,14 +75,12 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
             btn.style.color = "white";
         }
 
-        // Desbloquear Insignia correspondiente
         const badge = document.getElementById(`badge-${badgeName}`);
         if (badge) {
             badge.classList.remove("locked");
             badge.classList.add("unlocked");
         }
 
-        // Actualizar Barra de Progreso
         progress += progressIncrease;
         const progressBar = document.getElementById("progress-fill");
         if (progressBar) {
@@ -88,7 +88,6 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
             progressBar.innerText = `${progress}%`;
         }
 
-        // Registrar conexión en el Mapa
         const connectionsList = document.getElementById("connections-list");
         const emptyState = document.querySelector(".empty-state");
         if (emptyState) {
@@ -116,8 +115,7 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
         }
 
     } catch (error) {
-        // AQUÍ VEREMOS EL ERROR REAL SI FIREBASE LO RECHAZA
-        console.error("Error detallado al guardar el reto:", error);
-        alert("Hubo un error al guardar tu progreso. Revisa la consola.");
+        console.error("Error al guardar el reto:", error);
+        alert("Hubo un error al guardar tu progreso en la base de datos.");
     }
 };
