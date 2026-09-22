@@ -272,7 +272,10 @@ onAuthStateChanged(auth, async (user) => {
 });
 btnLogout.addEventListener('click', async () => {
     await signOut(auth);
-    // El onAuthStateChanged detectará la salida y mostrará el login automáticamente
+    
+    // Limpiar los inputs de texto al cerrar sesión
+    emailInput.value = '';
+    passwordInput.value = '';
 });
 
 // 2. Cambiar foto de perfil
