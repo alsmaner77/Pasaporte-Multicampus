@@ -31,8 +31,9 @@ const appContent = document.getElementById('app-content');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const campusSelect = document.getElementById('campus-select');
-const btnLogin = document.getElementById('btn-login');
-const btnRegister = document.getElementById('btn-register');
+const btnLoginAction = document.getElementById('btn-login-action');
+const btnRegisterAction = document.getElementById('btn-register-action');
+const carreraSelect = document.getElementById('carrera-select');
 const errorMsg = document.getElementById('auth-error');
 const btnLogout = document.getElementById('btn-logout');
 const uploadPic = document.getElementById('upload-pic');
@@ -62,33 +63,72 @@ window.openTab = function(evt, tabName) {
 };
 
 // 2. Autenticación (Registro)
-btnRegister.addEventListener('click', async () => {
+// --- Lógica para alternar vistas (Login / Registro) ---
+const textToggle = document.getElementById('text-toggle');
+const linkToggle = document.getElementById('link-toggle');
+const authTitle = document.getElementById('auth-title');
+const registerFields = document.getElementById('register-fields');
+
+let isLoginView = true;
+
+linkToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    isLoginView = !isLoginView;
+    errorMsg.style.display = "none"; // Limpiar errores al cambiar de vista
+    
+    if (isLoginView) {
+        authTitle.textContent = "Ingreso al Pasaporte";
+        registerFields.style.display = "none";
+        btnLoginAction.style.display = "block";
+        btnRegisterAction.style.display = "none";
+        textToggle.textContent = "¿No tienes cuenta?";
+        linkToggle.textContent = "Regístrate aquí";
+    } else {
+        authTitle.textContent = "Crea tu Pasaporte";
+        registerFields.style.display = "block";
+        btnLoginAction.style.display = "none";
+        btnRegisterAction.style.display = "block";
+        textToggle.textContent = "¿Ya tienes cuenta?";
+        linkToggle.textContent = "Inicia sesión";
+    }
+});
+
+// --- Autenticación (Registro) ---
+btnRegisterAction.addEventListener('click', async () => {
+    if (!campusSelect.value || !carreraSelect.value) {
+        errorMsg.textContent = "Por favor, selecciona tu campus y carrera.";
+        errorMsg.style.display = "block";
+        return;
+    }
+
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
         const user = userCredential.user;
+        
+        // Guardamos el nuevo usuario con todos sus datos en Firestore
         await setDoc(doc(db, "usuarios", user.uid), {
             correo: emailInput.value,
             campus: campusSelect.value,
+            carrera: carreraSelect.value, // Nueva información agregada a la base de datos
             fecha_registro: new Date().toISOString(),
             progreso_porcentaje: 0,
             retos_completados: {}
         });
     } catch (error) {
-        errorMsg.textContent = "Error de Firebase: " + error.code;
+        errorMsg.textContent = "Error de registro: " + error.message;
         errorMsg.style.display = "block";
     }
 });
 
-// 3. Autenticación (Iniciar Sesión)
-btnLogin.addEventListener('click', async () => {
+// --- Autenticación (Iniciar Sesión) ---
+btnLoginAction.addEventListener('click', async () => {
     try {
         await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
     } catch (error) {
-        errorMsg.textContent = "Error al iniciar sesión: " + error.code;
+        errorMsg.textContent = "Correo o contraseña incorrectos.";
         errorMsg.style.display = "block";
     }
 });
-
 // 4. Cerrar Sesión
 btnLogout.addEventListener('click', async () => {
     await signOut(auth);
