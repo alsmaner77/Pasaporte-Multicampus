@@ -1,5 +1,5 @@
 // Manejo de pestañas de navegación
-window.openTab(evt, tabName) {
+window.openTab=function(evt, tabName) {
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].classList.remove("active");
@@ -21,7 +21,7 @@ let completedChallenges = 0;
 const mockCities = ["Campus Monterrey", "Campus Guadalajara", "Campus Puebla", "Campus Querétaro", "Campus Reynosa"];
 
 // Lógica para completar un reto
-window.completeChallenge(challengeId, badgeName, progressIncrease) {
+window.completeChallenge=function(challengeId, badgeName, progressIncrease) {
     // 1. Actualizar botón del reto
     const btn = document.querySelector(`#reto-${challengeId} button`);
     btn.innerText = "Reto Completado ✅";
