@@ -154,3 +154,55 @@ main {
     content: "📍 ";
 }
 .empty-state::before { content: "" !important; }
+
+/* Estilo base del punto (campus sin conexiones) */
+.campus-pin {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #cccccc;
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Centra el punto exacto en la coordenada */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Estado Iluminado (campus con al menos 1 conexión) */
+.campus-pin.active {
+    background-color: #00CC99; /* Tu color secundario */
+    box-shadow: 0 0 10px 3px rgba(0, 204, 153, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 204, 153, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 204, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 204, 153, 0); }
+}
+
+/* Etiqueta flotante oculta por defecto */
+.pin-tooltip {
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #003366;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Mostrar etiqueta al pasar el mouse */
+.campus-pin:hover .pin-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
