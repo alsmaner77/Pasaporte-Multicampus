@@ -123,6 +123,70 @@ onAuthStateChanged(auth, async (user) => {
                     progressBar.innerText = `${progress}%`;
                 }
             }
+
+            if (datosUsuario.retos_completados) {
+                const connectionsList = document.getElementById("connections-list");
+                const emptyState = document.querySelector(".empty-state");
+                
+                // Si hay retos completados, quitamos el mensaje de "Aún no hay conexiones"
+                if (emptyState && Object.keys(datosUsuario.retos_completados).length > 0) {
+                    emptyState.remove();
+                }
+
+                // Diccionario para saber qué insignia le toca a cada reto
+                const insigniasMapa = {
+                    1: "México conectado",
+                    2: "Conexión real",
+                    3: "Explorador gastronómico",
+                    4: "Equipo Sin Fronteras",
+                    5: "Sin fronteras"
+                };
+
+                // Reiniciamos el contador global por si se recarga la página
+                completedChallenges = 0; 
+
+                for (const [retoId, completado] of Object.entries(datosUsuario.retos_completados)) {
+                    if (completado) {
+                        // 1. Bloquear el botón y ponerlo verde
+                        const btn = document.querySelector(`#reto-${retoId} button`);
+                        if (btn) {
+                            btn.innerText = "Reto Completado ✅";
+                            btn.disabled = true;
+                            btn.style.backgroundColor = "#28a745";
+                            btn.style.color = "white";
+                        }
+
+                        // 2. Desbloquear la insignia correspondiente
+                        const badgeName = insigniasMapa[retoId];
+                        if (badgeName) {
+                            const badge = document.getElementById(`badge-${badgeName}`);
+                            if (badge) {
+                                badge.classList.remove("locked");
+                                badge.classList.add("unlocked");
+                            }
+                        }
+
+                        // 3. Restaurar la conexión en el mapa
+                        const newConnection = document.createElement("li");
+                        const randomCampus = mockCities[(retoId - 1) % mockCities.length];
+                        newConnection.innerText = `Conexión registrada con estudiante de ${randomCampus} (Reto ${retoId})`;
+                        if (connectionsList) {
+                            connectionsList.appendChild(newConnection);
+                        }
+
+                        completedChallenges++;
+                    }
+                }
+
+                // 4. Restaurar la insignia final si ya tiene los 5 retos
+                if (completedChallenges >= 5) {
+                    const badgeNacional = document.getElementById("badge-Explorador Nacional");
+                    if (badgeNacional) {
+                        badgeNacional.classList.remove("locked");
+                        badgeNacional.classList.add("unlocked");
+                    }
+                }
+            }
         }
     } else {
         loginScreen.style.display = 'flex';
