@@ -574,7 +574,7 @@ btnVideoCall.addEventListener('click', async () => {
     // 1. Crear un nombre de sala único y seguro basado en el ID del chat
     // Eliminamos los guiones bajos para que Jitsi lo acepte sin problemas
     const roomName = "Pasaporte" + currentChatId.replace(/_/g, "");
-    const jitsiUrl = `https://meet.jit.si/${roomName}`;
+    const jitsiUrl = `https://meet.ffmuc.net/${roomName}`;
 
     // 2. Abrir la videollamada en una nueva pestaña
     window.open(jitsiUrl, '_blank');
