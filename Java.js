@@ -738,15 +738,16 @@ btnAttachImg.addEventListener('click', () => chatImgInput.click());
 btnTakePhoto.addEventListener('click', () => chatCameraInput.click());
 
 // Función maestra para procesar la imagen (sirve para ambos casos)
+// Función maestra para procesar la imagen (sirve para ambos casos)
 const procesarImagenParaChat = async (e) => {
     const file = e.target.files[0];
     if (!file || !currentChatId) return;
 
-    // Mostrar estado de "Analizando..." y bloquear botones
-    const originalPlaceholder = document.getElementById('chat-input').placeholder;
-    document.getElementById('chat-input').placeholder = "Analizando imagen con IA...";
+    // Bloquear botones discretamente (sin cambiar textos)
     btnAttachImg.disabled = true;
     btnTakePhoto.disabled = true;
+    btnAttachImg.style.opacity = "0.5";
+    btnTakePhoto.style.opacity = "0.5";
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -758,11 +759,9 @@ const procesarImagenParaChat = async (e) => {
         imgElement.src = base64Img;
         
         imgElement.onload = async () => {
-            // 1. EVALUAR CON IA (MobileNet)
+            // 1. EVALUAR CON IA SILENCIOSAMENTE
             if (aiModel) {
                 const predictions = await aiModel.classify(imgElement);
-                console.log("Predicciones de la IA:", predictions);
-
                 const foodKeywords = ['food', 'dish', 'plate', 'meal', 'restaurant', 'fruit', 'vegetable', 'meat', 'bread', 'pizza', 'taco', 'guacamole', 'soup'];
                 
                 const esComida = predictions.some(pred => 
@@ -776,7 +775,7 @@ const procesarImagenParaChat = async (e) => {
                         const userData = myUserSnap.data();
                         if (!userData.retos_completados || !userData.retos_completados[3]) {
                             await window.completeChallenge(3, "México en un plato", 12.5);
-                            alert("🤖 IA: ¡Qué rico se ve! Has completado el Reto 3.");
+                            alert("¡Qué rico se ve! Has completado el Reto 3."); // Alerta opcional, puedes quitarla si quieres que sea 100% silencioso
                         }
                     }
                 }
@@ -786,7 +785,7 @@ const procesarImagenParaChat = async (e) => {
             try {
                 const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
                 await addDoc(mensajesRef, {
-                    texto: "📷 Imagen enviada", 
+                    texto: "📷 Imagen", 
                     imagenUrl: base64Img,
                     senderId: auth.currentUser.uid,
                     timestamp: serverTimestamp()
@@ -794,7 +793,7 @@ const procesarImagenParaChat = async (e) => {
 
                 const chatRef = doc(db, "chats", currentChatId);
                 await updateDoc(chatRef, {
-                    ultimo_mensaje: "📷 Imagen",
+                    ultimo_mensaje: "📷 Imagen enviada",
                     fecha_actualizacion: serverTimestamp()
                 });
 
@@ -803,10 +802,11 @@ const procesarImagenParaChat = async (e) => {
             }
 
             // 3. RESTAURAR INTERFAZ
-            document.getElementById('chat-input').placeholder = originalPlaceholder;
             btnAttachImg.disabled = false;
             btnTakePhoto.disabled = false;
-            e.target.value = ""; // Limpiar input para poder subir la misma foto después si se quiere
+            btnAttachImg.style.opacity = "1";
+            btnTakePhoto.style.opacity = "1";
+            e.target.value = ""; // Limpiar input 
         };
     };
 };
