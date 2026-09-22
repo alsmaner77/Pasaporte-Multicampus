@@ -9,6 +9,19 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
+    <!-- Modal para cámara en computadora -->
+    <div id="webcam-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; width: 90%; max-width: 500px;">
+            <h3 style="margin-top: 0; color: #003366;">Tomar Foto</h3>
+            <!-- El video mostrará la cámara en tiempo real -->
+            <video id="webcam-video" autoplay playsinline style="width: 100%; border-radius: 8px; background: #000; margin-bottom: 15px;"></video>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btn-capture-webcam" style="background-color: #00CC99; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">📸 Capturar</button>
+                <button id="btn-close-webcam" style="background-color: #d9534f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
+            </div>
+        </div>
+    </div>
 <body>
     <!-- Pantalla de Login / Registro (SE QUEDA IGUAL, VISIBLE POR DEFECTO) -->
     <!-- Contenedor principal de autenticación -->
