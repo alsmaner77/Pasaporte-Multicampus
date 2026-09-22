@@ -143,6 +143,8 @@ onAuthStateChanged(auth, async (user) => {
         appContent.style.display = 'block';
         // Activar la bandeja de entrada en tiempo real
         cargarBandejaEntrada();
+        // Actualizar las luces del mapa de conexiones
+        actualizarMapaConexiones();
 
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
@@ -637,3 +639,59 @@ btnVideoCall.addEventListener('click', async () => {
         console.error("Error al enviar la invitación de video:", error);
     }
 });
+
+
+async function actualizarMapaConexiones() {
+    if (!auth.currentUser) return;
+    const myUid = auth.currentUser.uid;
+
+    try {
+        // 1. Obtener todos los chats del usuario actual
+        const chatsRef = collection(db, "chats");
+        const misChatsQ = query(chatsRef, where("participantes", "array-contains", myUid));
+        const misChatsSnap = await getDocs(misChatsQ);
+
+        // 2. Extraer los UIDs de los compañeros
+        let partnerUids = [];
+        misChatsSnap.forEach(docSnap => {
+            const participantes = docSnap.data().participantes;
+            const partnerUid = participantes.find(uid => uid !== myUid);
+            if (partnerUid) partnerUids.push(partnerUid);
+        });
+
+        // 3. Obtener el campus de cada compañero y contarlos
+        let conteoCampus = {}; // Ejemplo: { "Monterrey": 2, "Querétaro": 1 }
+        
+        for (const uid of partnerUids) {
+            const partnerRef = doc(db, "usuarios", uid);
+            const partnerSnap = await getDoc(partnerRef);
+            
+            if (partnerSnap.exists()) {
+                const campus = partnerSnap.data().campus;
+                if (campus) {
+                    conteoCampus[campus] = (conteoCampus[campus] || 0) + 1;
+                }
+            }
+        }
+
+        // 4. Actualizar visualmente los pines en el mapa
+        const pines = document.querySelectorAll('.campus-pin');
+        
+        pines.forEach(pin => {
+            const nombreCampus = pin.getAttribute('data-campus');
+            const spanConteo = pin.querySelector('.count');
+            
+            // Si el campus está en nuestro conteo (mayor a 0)
+            if (conteoCampus[nombreCampus]) {
+                pin.classList.add('active'); // Enciende la luz verde
+                spanConteo.textContent = conteoCampus[nombreCampus]; // Actualiza el número en el tooltip
+            } else {
+                pin.classList.remove('active'); // Lo mantiene gris
+                spanConteo.textContent = "0";
+            }
+        });
+
+    } catch (error) {
+        console.error("Error al actualizar el mapa:", error);
+    }
+}
