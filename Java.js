@@ -366,7 +366,6 @@ function cargarBandejaEntrada() {
     if (!auth.currentUser) return;
     const myUid = auth.currentUser.uid;
 
-    // 1. Quitamos el orderBy para que Firebase no bloquee la búsqueda por falta de índices
     const chatsRef = collection(db, "chats");
     const qInbox = query(chatsRef, where("participantes", "array-contains", myUid));
 
@@ -388,29 +387,36 @@ function cargarBandejaEntrada() {
 
         if (emptyMsg) emptyMsg.style.display = 'none';
 
-        Array.from(chatsList.children).forEach(child => {
-            if (child.id !== 'empty-chats-msg') child.remove();
-        });
-
-        // 2. Ordenamos los chats desde JavaScript (del más reciente al más antiguo)
+        // 1. Ordenamos los documentos (del más reciente al más antiguo)
         const docsOrdenados = snapshot.docs.sort((a, b) => {
             const tiempoA = a.data().fecha_actualizacion?.toMillis() || 0;
             const tiempoB = b.data().fecha_actualizacion?.toMillis() || 0;
             return tiempoB - tiempoA;
         });
 
-        // 3. Dibujar cada conversación usando el arreglo ya ordenado
-        for (const docSnap of docsOrdenados) {
+        // 2. BUSCAMOS LOS DATOS PRIMERO: Recopilamos todas las fotos y perfiles al mismo tiempo
+        const chatsListos = await Promise.all(docsOrdenados.map(async (docSnap) => {
             const chatData = docSnap.data();
             const chatId = docSnap.id;
-
             const partnerUid = chatData.participantes.find(uid => uid !== myUid);
             const partnerRef = doc(db, "usuarios", partnerUid);
             const partnerSnap = await getDoc(partnerRef);
             
-            if (partnerSnap.exists()) {
-                const partnerData = partnerSnap.data();
-                
+            return {
+                chatId,
+                chatData,
+                partnerData: partnerSnap.exists() ? partnerSnap.data() : null
+            };
+        }));
+
+        // 3. LIMPIEZA TOTAL: Ahora que tenemos los datos, limpiamos la bandeja justo antes de dibujar
+        Array.from(chatsList.children).forEach(child => {
+            if (child.id !== 'empty-chats-msg') child.remove();
+        });
+
+        // 4. DIBUJAR: Inyectamos todas las tarjetas de contacto sincronizadamente
+        chatsListos.forEach(({ chatId, chatData, partnerData }) => {
+            if (partnerData) {
                 const li = document.createElement('li');
                 li.style.padding = "15px";
                 li.style.backgroundColor = "white";
@@ -444,7 +450,7 @@ function cargarBandejaEntrada() {
 
                 chatsList.appendChild(li);
             }
-        }
+        });
     });
 }
 // Función que abre la sala y activa los mensajes en tiempo real
