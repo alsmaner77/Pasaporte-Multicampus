@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasaporte Multicampus</title>
     <link rel="stylesheet" href="Interfaz.css">
+    <!-- Inteligencia Artificial para detectar imágenes en el navegador -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
     <!-- Pantalla de Login / Registro (SE QUEDA IGUAL, VISIBLE POR DEFECTO) -->
@@ -347,12 +350,20 @@
                     <!-- Los globos de chat aparecerán aquí -->
                 </div>
 
-                <!-- Caja de texto -->
-                <div style="padding: 15px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px;">
+                <!-- Caja de texto -->                
+                <div style="padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; background-color: #f4f7f6;">
+                    
+                    <!-- Input oculto para seleccionar archivos -->
+                    <input type="file" id="chat-img-input" accept="image/*" style="display: none;">
+                    
+                    <!-- Botón para abrir la galería -->
+                    <button id="btn-attach-img" style="background-color: #e9ecef; border: 1px solid #ccc; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                        📷
+                    </button>
+                
                     <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none;">
-                    <button id="btn-send-message" style="padding: 10px 20px; background-color: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Enviar</button>
+                    <button id="btn-send-msg" style="background-color: #003366; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Enviar</button>
                 </div>
-            </div>
         </section>
 
             <!-- Sección de Perfil -->
