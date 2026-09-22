@@ -100,7 +100,9 @@ btnLogout.addEventListener('click', async () => {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         loginScreen.style.display = 'none';
-        appContent.style.display = 'block'; 
+        appContent.style.display = 'block';
+        // Activar la bandeja de entrada en tiempo real
+        cargarBandejaEntrada();
 
         const docRef = doc(db, "usuarios", user.uid);
         const docSnap = await getDoc(docRef);
@@ -347,6 +349,96 @@ const btnSendMessage = document.getElementById('btn-send-message');
 const chatInput = document.getElementById('chat-input');
 const chatMessagesContainer = document.getElementById('chat-messages');
 
+let unsubscribeInbox = null;
+
+function cargarBandejaEntrada() {
+    if (!auth.currentUser) return;
+    const myUid = auth.currentUser.uid;
+
+    // Buscar chats donde yo sea uno de los participantes, ordenados por actividad
+    const chatsRef = collection(db, "chats");
+    const qInbox = query(chatsRef, where("participantes", "array-contains", myUid), orderBy("fecha_actualizacion", "desc"));
+
+    if (unsubscribeInbox) unsubscribeInbox();
+
+    // onSnapshot actualizará la lista al instante si alguien nos habla o creamos un chat
+    unsubscribeInbox = onSnapshot(qInbox, async (snapshot) => {
+        const chatsList = document.getElementById('chats-list');
+        const emptyMsg = document.getElementById('empty-chats-msg');
+
+        if (!chatsList) return;
+
+        if (snapshot.empty) {
+            if (emptyMsg) emptyMsg.style.display = 'block';
+            // Borrar todo menos el mensaje de vacío
+            Array.from(chatsList.children).forEach(child => {
+                if (child.id !== 'empty-chats-msg') child.remove();
+            });
+            return;
+        }
+
+        // Si hay chats, ocultamos el mensaje de vacío
+        if (emptyMsg) emptyMsg.style.display = 'none';
+
+        // Limpiar la lista actual antes de re-dibujar
+        Array.from(chatsList.children).forEach(child => {
+            if (child.id !== 'empty-chats-msg') child.remove();
+        });
+
+        // Dibujar cada conversación
+        for (const docSnap of snapshot.docs) {
+            const chatData = docSnap.data();
+            const chatId = docSnap.id;
+
+            // Identificar quién es el otro estudiante
+            const partnerUid = chatData.participantes.find(uid => uid !== myUid);
+
+            // Obtener los datos del otro estudiante (Nombre, foto, campus)
+            const partnerRef = doc(db, "usuarios", partnerUid);
+            const partnerSnap = await getDoc(partnerRef);
+            
+            if (partnerSnap.exists()) {
+                const partnerData = partnerSnap.data();
+                
+                // Crear la tarjeta de contacto para la lista
+                const li = document.createElement('li');
+                li.style.padding = "15px";
+                li.style.backgroundColor = "white";
+                li.style.border = "1px solid #ddd";
+                li.style.borderRadius = "8px";
+                li.style.cursor = "pointer";
+                li.style.display = "flex";
+                li.style.alignItems = "center";
+                li.style.gap = "15px";
+                li.style.marginBottom = "10px";
+                li.style.transition = "background-color 0.2s";
+
+                // Efecto hover simple
+                li.onmouseover = () => li.style.backgroundColor = "#f4f7f6";
+                li.onmouseout = () => li.style.backgroundColor = "white";
+
+                const partnerPic = partnerData.foto_perfil && partnerData.foto_perfil.startsWith("data:image") 
+                    ? partnerData.foto_perfil 
+                    : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50'><rect width='50' height='50' fill='%23cccccc'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666666' font-size='12'>Foto</text></svg>";
+
+                li.innerHTML = `
+                    <img src="${partnerPic}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #003366;">
+                    <div style="flex: 1; overflow: hidden;">
+                        <h4 style="margin: 0; font-size: 16px; color: #003366; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${partnerData.correo}</h4>
+                        <p style="margin: 0; font-size: 13px; color: #666; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">${chatData.ultimo_mensaje || "Nuevo chat"}</p>
+                    </div>
+                `;
+
+                // Al hacer clic en la tarjeta, abrimos el chat
+                li.addEventListener('click', () => {
+                    abrirSalaDeChat(chatId, partnerData);
+                });
+
+                chatsList.appendChild(li);
+            }
+        }
+    });
+}
 // Función que abre la sala y activa los mensajes en tiempo real
 window.abrirSalaDeChat = function(chatId, partnerData) {
     currentChatId = chatId;
