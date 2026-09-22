@@ -278,7 +278,8 @@ const btnFindPartner = document.getElementById('btn-find-partner');
 const searchStatus = document.getElementById('search-status');
 
 btnFindPartner.addEventListener('click', async () => {
-    if (!authInstance || !authInstance.currentUser) return;
+    // 1. Corregimos authInstance por auth
+    if (!auth || !auth.currentUser) return;
 
     // Cambiar estado visual a "buscando"
     searchStatus.style.display = 'block';
@@ -286,44 +287,43 @@ btnFindPartner.addEventListener('click', async () => {
     btnFindPartner.disabled = true;
 
     try {
-        // 1. Consultar estudiantes de OTROS campus
-        const usuariosRef = collection(dbInstance, "usuarios");
+        // 2. Corregimos dbInstance por db
+        const usuariosRef = collection(db, "usuarios");
         const q = query(usuariosRef, where("campus", "!=", miCampus));
         const querySnapshot = await getDocs(q);
 
         let posiblesCompaneros = [];
         querySnapshot.forEach((doc) => {
-            // Asegurarnos de no incluirnos a nosotros mismos por accidente
-            if (doc.id !== authInstance.currentUser.uid) {
+            // 3. Corregimos authInstance por auth
+            if (doc.id !== auth.currentUser.uid) {
                 posiblesCompaneros.push({ id: doc.id, ...doc.data() });
             }
         });
 
-        // 2. Validar si hay alguien disponible
+        // Validar si hay alguien disponible
         if (posiblesCompaneros.length === 0) {
             searchStatus.textContent = "No hay estudiantes de otros campus disponibles en este momento. ¡Intenta más tarde!";
             btnFindPartner.disabled = false;
             return;
         }
 
-        // 3. Selección Aleatoria
+        // Selección Aleatoria
         const randomUser = posiblesCompaneros[Math.floor(Math.random() * posiblesCompaneros.length)];
 
-        // 4. Generar ID único para la sala de chat
-        // Ordenamos los IDs alfabéticamente para que siempre sea el mismo sin importar quién inició el chat
-        const myUid = authInstance.currentUser.uid;
+        // 4. Corregimos authInstance por auth
+        const myUid = auth.currentUser.uid;
         const partnerUid = randomUser.id;
         const chatId = myUid < partnerUid ? `${myUid}_${partnerUid}` : `${partnerUid}_${myUid}`;
 
-        // 5. Crear el documento del chat en Firestore
-        const chatRef = doc(dbInstance, "chats", chatId);
+        // 5. Corregimos dbInstance por db
+        const chatRef = doc(db, "chats", chatId);
         await setDoc(chatRef, {
             participantes: [myUid, partnerUid],
             ultimo_mensaje: "Chat iniciado",
             fecha_actualizacion: serverTimestamp()
         }, { merge: true });
 
-        // 6. Éxito: Limpiar estado y redirigir al chat
+        // Éxito: Limpiar estado y redirigir al chat
         searchStatus.style.display = 'none';
         btnFindPartner.disabled = false;
         
