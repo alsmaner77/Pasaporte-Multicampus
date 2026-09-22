@@ -153,37 +153,115 @@
             <h2>Mi Mapa de Conexiones</h2>
             <p>Pasa el mouse sobre cada campus para ver cuántos estudiantes has conocido.</p>
         
-            <!-- Contenedor del Mapa -->
-            <img src="mapa-mexico.png" alt="Mapa de México" style="width: 100%; height: auto; opacity: 0.7;">
+            <!-- Contenedor del Mapa sin padding para que las coordenadas % sean exactas a la imagen -->
+            <div class="map-container" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; background-color: transparent; padding: 0;">
                 
-                <!-- Aquí debes poner la URL de una imagen limpia del mapa de México -->
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Blank_map_of_Mexico.svg/1024px-Blank_map_of_Mexico.svg.png" alt="Mapa de México" style="width: 100%; height: auto; opacity: 0.7;">
+                <img src="mapa-mexico.png" alt="Mapa de México" style="display: block; width: 100%; height: auto; opacity: 0.6; filter: grayscale(100%);">
         
-                <!-- Pines de los campus (Ajusta top y left según tu imagen de fondo) -->
-                <div class="campus-pin" data-campus="Reynosa" style="top: 28%; left: 65%;">
+                <!-- Zona Noroeste -->
+                <div class="campus-pin" data-campus="Tijuana" style="top: 8%; left: 6%;">
+                    <span class="pin-tooltip">Tijuana: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Hermosillo" style="top: 22%; left: 18%;">
+                    <span class="pin-tooltip">Hermosillo: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Ciudad Obregón" style="top: 30%; left: 21%;">
+                    <span class="pin-tooltip">Ciudad Obregón: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Los Mochis" style="top: 38%; left: 25%;">
+                    <span class="pin-tooltip">Los Mochis: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Culiacán" style="top: 45%; left: 29%;">
+                    <span class="pin-tooltip">Culiacán: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Mazatlán" style="top: 52%; left: 34%;">
+                    <span class="pin-tooltip">Mazatlán: <span class="count">0</span> conexiones</span>
+                </div>
+        
+                <!-- Zona Norte y Noreste -->
+                <div class="campus-pin" data-campus="Ciudad Juárez" style="top: 11%; left: 34%;">
+                    <span class="pin-tooltip">Ciudad Juárez: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Chihuahua" style="top: 25%; left: 35%;">
+                    <span class="pin-tooltip">Chihuahua: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Nuevo Laredo" style="top: 28%; left: 55%;">
+                    <span class="pin-tooltip">Nuevo Laredo: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Reynosa" style="top: 33%; left: 61%;">
                     <span class="pin-tooltip">Reynosa: <span class="count">0</span> conexiones</span>
                 </div>
-                
-                <div class="campus-pin" data-campus="Tampico" style="top: 50%; left: 65%;">
+                <div class="campus-pin" data-campus="Tampico" style="top: 55%; left: 64%;">
                     <span class="pin-tooltip">Tampico: <span class="count">0</span> conexiones</span>
                 </div>
         
-                <div class="campus-pin" data-campus="Monterrey" style="top: 35%; left: 55%;">
-                    <span class="pin-tooltip">Monterrey: <span class="count">0</span> conexiones</span>
+                <!-- Zona Monterrey (Ligeramente separados para ser clickeables) -->
+                <div class="campus-pin" data-campus="San Nicolás" style="top: 34%; left: 55%;">
+                    <span class="pin-tooltip">San Nicolás: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Cumbres" style="top: 35.5%; left: 54%;">
+                    <span class="pin-tooltip">Cumbres: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Guadalupe" style="top: 36%; left: 56.5%;">
+                    <span class="pin-tooltip">Guadalupe: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Las Torres" style="top: 37.5%; left: 55%;">
+                    <span class="pin-tooltip">Las Torres: <span class="count">0</span> conexiones</span>
                 </div>
         
-                <div class="campus-pin" data-campus="Guadalajara" style="top: 60%; left: 45%;">
+                <!-- Zona Centro y Occidente -->
+                <div class="campus-pin" data-campus="Durango" style="top: 46%; left: 40%;">
+                    <span class="pin-tooltip">Durango: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Laguna" style="top: 41%; left: 45%;">
+                    <span class="pin-tooltip">Laguna: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Zacatecas" style="top: 55%; left: 47%;">
+                    <span class="pin-tooltip">Zacatecas: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Aguascalientes" style="top: 61%; left: 48%;">
+                    <span class="pin-tooltip">Aguascalientes: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="San Luis Potosí" style="top: 56%; left: 54%;">
+                    <span class="pin-tooltip">San Luis Potosí: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Zapopan" style="top: 64.5%; left: 42.5%;">
+                    <span class="pin-tooltip">Zapopan: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Guadalajara" style="top: 66%; left: 44%;">
                     <span class="pin-tooltip">Guadalajara: <span class="count">0</span> conexiones</span>
                 </div>
-                
-                <div class="campus-pin" data-campus="Querétaro" style="top: 65%; left: 55%;">
+                <div class="campus-pin" data-campus="Morelia" style="top: 72%; left: 50%;">
+                    <span class="pin-tooltip">Morelia: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Querétaro" style="top: 66%; left: 54%;">
                     <span class="pin-tooltip">Querétaro: <span class="count">0</span> conexiones</span>
                 </div>
-                
-                <!-- Agrega el resto de los 32 campus copiando el bloque div y cambiando el data-campus y los porcentajes -->
+        
+                <!-- Zona Metropolitana y Sur -->
+                <div class="campus-pin" data-campus="Cuautitlán Izcalli" style="top: 71%; left: 55%;">
+                    <span class="pin-tooltip">Cuautitlán Izcalli: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Toluca" style="top: 73.5%; left: 54%;">
+                    <span class="pin-tooltip">Toluca: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Ferrería" style="top: 73%; left: 57%;">
+                    <span class="pin-tooltip">Ferrería: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Cuernavaca" style="top: 77%; left: 57%;">
+                    <span class="pin-tooltip">Cuernavaca: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Puebla" style="top: 75%; left: 62%;">
+                    <span class="pin-tooltip">Puebla: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Veracruz" style="top: 74%; left: 69%;">
+                    <span class="pin-tooltip">Veracruz: <span class="count">0</span> conexiones</span>
+                </div>
+                <div class="campus-pin" data-campus="Villahermosa" style="top: 81%; left: 81%;">
+                    <span class="pin-tooltip">Villahermosa: <span class="count">0</span> conexiones</span>
+                </div>
             </div>
         </section>
-
         <!-- Sección de Insignias -->
         <section id="insignias" class="tab-content">
             <h2>Mis Insignias</h2>
