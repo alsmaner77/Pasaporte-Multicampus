@@ -282,48 +282,62 @@ const btnFindPartner = document.getElementById('btn-find-partner');
 const searchStatus = document.getElementById('search-status');
 
 btnFindPartner.addEventListener('click', async () => {
-    // 1. Corregimos authInstance por auth
     if (!auth || !auth.currentUser) return;
 
     // Cambiar estado visual a "buscando"
     searchStatus.style.display = 'block';
-    searchStatus.textContent = "Buscando en la base de datos...";
+    searchStatus.textContent = "Buscando a alguien nuevo en la base de datos...";
     btnFindPartner.disabled = true;
 
     try {
-        // 2. Corregimos dbInstance por db
+        const myUid = auth.currentUser.uid;
+
+        // 1. REVISAR CON QUIÉN YA HABLASTE
+        // Buscamos todos los chats donde tú participes para no repetir compañeros
+        const chatsRef = collection(db, "chats");
+        const misChatsQ = query(chatsRef, where("participantes", "array-contains", myUid));
+        const misChatsSnap = await getDocs(misChatsQ);
+        
+        // Creamos una lista de IDs excluidos (empezando por ti mismo)
+        let usuariosYaConectados = [myUid];
+        misChatsSnap.forEach(docSnap => {
+            const participantes = docSnap.data().participantes;
+            const partnerUid = participantes.find(uid => uid !== myUid);
+            if (partnerUid) usuariosYaConectados.push(partnerUid);
+        });
+
+        // 2. CONSULTAR ESTUDIANTES DE OTROS CAMPUS
         const usuariosRef = collection(db, "usuarios");
         const q = query(usuariosRef, where("campus", "!=", miCampus));
         const querySnapshot = await getDocs(q);
 
         let posiblesCompaneros = [];
-        querySnapshot.forEach((doc) => {
-            // 3. Corregimos authInstance por auth
-            if (doc.id !== auth.currentUser.uid) {
-                posiblesCompaneros.push({ id: doc.id, ...doc.data() });
+        querySnapshot.forEach((docSnap) => {
+            // 3. EL FILTRO MÁGICO: Solo lo agregamos a la ruleta si NO está en la lista de excluidos
+            if (!usuariosYaConectados.includes(docSnap.id)) {
+                posiblesCompaneros.push({ id: docSnap.id, ...docSnap.data() });
             }
         });
 
-        // Validar si hay alguien disponible
+        // 4. VALIDAR SI QUEDAN ESTUDIANTES NUEVOS
         if (posiblesCompaneros.length === 0) {
-            searchStatus.textContent = "No hay estudiantes de otros campus disponibles en este momento. ¡Intenta más tarde!";
+            searchStatus.textContent = "Ya conectaste con todos los estudiantes disponibles de otros campus. ¡Invita a más amigos a unirse!";
             btnFindPartner.disabled = false;
             return;
         }
 
-        // Selección Aleatoria
+        // 5. SELECCIÓN ALEATORIA ESTRICTA
         const randomUser = posiblesCompaneros[Math.floor(Math.random() * posiblesCompaneros.length)];
-
-        // 4. Corregimos authInstance por auth
-        const myUid = auth.currentUser.uid;
         const partnerUid = randomUser.id;
+
+        // Generar ID único para la sala de chat
         const chatId = myUid < partnerUid ? `${myUid}_${partnerUid}` : `${partnerUid}_${myUid}`;
 
-        // 5. Corregimos dbInstance por db
+        // Crear el documento del chat en Firestore
         const chatRef = doc(db, "chats", chatId);
         await setDoc(chatRef, {
             participantes: [myUid, partnerUid],
-            ultimo_mensaje: "Chat iniciado",
+            ultimo_mensaje: "¡Nueva conexión establecida!", // Un mensaje de inicio automático
             fecha_actualizacion: serverTimestamp()
         }, { merge: true });
 
@@ -331,10 +345,8 @@ btnFindPartner.addEventListener('click', async () => {
         searchStatus.style.display = 'none';
         btnFindPartner.disabled = false;
         
-        // Simular el clic para cambiar a la pestaña de mensajes automáticamente
+        // Cambiar a la pestaña de mensajes automáticamente
         document.querySelector("button[onclick*='mensajes']").click();
-        
-        // Preparar la vista del chat (Función del paso 3)
         abrirSalaDeChat(chatId, randomUser);
 
     } catch (error) {
@@ -343,7 +355,6 @@ btnFindPartner.addEventListener('click', async () => {
         btnFindPartner.disabled = false;
     }
 });
-
 // Referencias de los controles del chat
 const btnSendMessage = document.getElementById('btn-send-message');
 const chatInput = document.getElementById('chat-input');
