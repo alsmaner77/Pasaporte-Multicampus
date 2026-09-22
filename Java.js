@@ -383,7 +383,20 @@ btnFindPartner.addEventListener('click', async () => {
             fecha_actualizacion: serverTimestamp()
         }, { merge: true });
 
-        // Éxito: Limpiar estado y redirigir al chat
+        const myUserRef = doc(db, "usuarios", myUid);
+        const myUserSnap = await getDoc(myUserRef);
+        
+        if (myUserSnap.exists()) {
+            const userData = myUserSnap.data();
+            // Si no existe el registro de retos, o el reto 1 es falso/indefinido:
+            if (!userData.retos_completados || !userData.retos_completados[1]) {
+                // Llamamos a tu función global pasándole el ID del reto, la insignia y el % de avance
+                await window.completeChallenge(1, "México conectado", 12.5);
+            }
+        }
+        // -----------------------------------------------
+
+        // Éxito: Limpiar estado y redirigir al chat (ESTO YA LO TIENES)
         searchStatus.style.display = 'none';
         btnFindPartner.disabled = false;
         
