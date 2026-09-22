@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs, setDoc, serverTimestamp, onSnapshot, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -21,6 +21,8 @@ const db = getFirestore(app);
 let progress = 0;
 let completedChallenges = 0;
 let miCampus = "";
+let currentChatId = null;
+let unsubscribeChat = null;
 const mockCities = ["Campus Monterrey", "Campus Guadalajara", "Campus Puebla", "Campus Querétaro"];
 
 // Referencias de la interfaz
@@ -340,9 +342,16 @@ btnFindPartner.addEventListener('click', async () => {
     }
 });
 
-// Función temporal para evitar errores hasta que hagamos el Paso 3
+// Referencias de los controles del chat
+const btnSendMessage = document.getElementById('btn-send-message');
+const chatInput = document.getElementById('chat-input');
+const chatMessagesContainer = document.getElementById('chat-messages');
+
+// Función que abre la sala y activa los mensajes en tiempo real
 window.abrirSalaDeChat = function(chatId, partnerData) {
-    console.log("Sala generada con:", partnerData.correo, "ID del chat:", chatId);
+    currentChatId = chatId;
+    
+    // Cambiar de vista
     document.getElementById('inbox-view').style.display = 'none';
     document.getElementById('chat-room-view').style.display = 'flex';
     
@@ -354,10 +363,98 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
         ? partnerData.foto_perfil 
         : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23cccccc'/></svg>";
     document.getElementById('chat-partner-pic').src = partnerPic;
+
+    // Limpiar mensajes anteriores de la pantalla
+    chatMessagesContainer.innerHTML = ''; 
+
+    // Apagar cualquier conexión a un chat anterior para evitar duplicados
+    if (unsubscribeChat) {
+        unsubscribeChat();
+    }
+
+    // Encender el túnel en tiempo real (onSnapshot) para esta sala
+    const mensajesRef = collection(db, "chats", chatId, "mensajes");
+    const qMensajes = query(mensajesRef, orderBy("timestamp", "asc"));
+
+    unsubscribeChat = onSnapshot(qMensajes, (snapshot) => {
+        chatMessagesContainer.innerHTML = ''; // Limpiar para re-dibujar la lista actualizada
+        
+        snapshot.forEach((docSnap) => {
+            const msgData = docSnap.data();
+            const esMio = msgData.senderId === auth.currentUser.uid;
+
+            // Crear el globo de texto
+            const msgDiv = document.createElement('div');
+            msgDiv.style.maxWidth = "70%";
+            msgDiv.style.padding = "10px 15px";
+            msgDiv.style.borderRadius = "15px";
+            msgDiv.style.wordWrap = "break-word";
+
+            // Diferenciar visualmente mis mensajes de los del compañero
+            if (esMio) {
+                msgDiv.style.alignSelf = "flex-end";
+                msgDiv.style.backgroundColor = "#00CC99"; // Tu color secundario
+                msgDiv.style.color = "white";
+            } else {
+                msgDiv.style.alignSelf = "flex-start";
+                msgDiv.style.backgroundColor = "#ffffff";
+                msgDiv.style.border = "1px solid #ddd";
+                msgDiv.style.color = "#333333";
+            }
+
+            msgDiv.textContent = msgData.texto;
+            chatMessagesContainer.appendChild(msgDiv);
+        });
+        
+        // Hacer scroll automático hacia abajo cuando llega un mensaje
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    });
 };
 
-// Configurar botón para volver al inbox
+// Lógica para ENVIAR mensajes
+btnSendMessage.addEventListener('click', async () => {
+    const texto = chatInput.value.trim();
+    if (!texto || !currentChatId) return;
+
+    const textoGuardado = texto;
+    chatInput.value = ''; // Limpiar la caja de texto al instante para mejor fluidez
+
+    try {
+        // 1. Guardar el mensaje en la subcolección
+        const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
+        await addDoc(mensajesRef, {
+            texto: textoGuardado,
+            senderId: auth.currentUser.uid,
+            timestamp: serverTimestamp()
+        });
+
+        // 2. Actualizar el "último mensaje" en el documento principal del chat (útil para la bandeja de entrada)
+        const chatRef = doc(db, "chats", currentChatId);
+        await updateDoc(chatRef, {
+            ultimo_mensaje: textoGuardado,
+            fecha_actualizacion: serverTimestamp()
+        });
+
+    } catch (error) {
+        console.error("Error al enviar mensaje:", error);
+        alert("No se pudo enviar el mensaje. Revisa tu conexión.");
+    }
+});
+
+// Permitir enviar el mensaje también presionando la tecla "Enter"
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        btnSendMessage.click();
+    }
+});
+
+// Lógica para volver a la bandeja de entrada (Cerrar chat)
 document.getElementById('btn-back-to-inbox').addEventListener('click', () => {
+    // Apagar la conexión en tiempo real para ahorrar datos y memoria
+    if (unsubscribeChat) {
+        unsubscribeChat();
+        unsubscribeChat = null;
+    }
     document.getElementById('chat-room-view').style.display = 'none';
     document.getElementById('inbox-view').style.display = 'block';
 });
