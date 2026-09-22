@@ -737,29 +737,54 @@ async function actualizarMapaConexiones() {
 btnAttachImg.addEventListener('click', () => chatImgInput.click());
 btnTakePhoto.addEventListener('click', () => chatCameraInput.click());
 
-// Función maestra para procesar la imagen (sirve para ambos casos)
-// Función maestra para procesar la imagen (sirve para ambos casos)
-const procesarImagenParaChat = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !currentChatId) return;
+// --- SISTEMA DE IMÁGENES, IA Y CÁMARA ---
 
-    // Bloquear botones discretamente (sin cambiar textos)
+// 1. Función para comprimir imágenes antes de enviarlas (Evita el límite de 1MB de Firebase)
+function comprimirImagen(base64Str, maxWidth = 800) {
+    return new Promise((resolve) => {
+        let img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+            let canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            // Mantener proporción si la imagen es muy grande
+            if (width > maxWidth) {
+                height = Math.round((height *= maxWidth / width));
+                width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Exportar como JPEG al 70% de calidad (Súper ligero)
+            resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+        };
+    });
+}
+
+// 2. Función maestra: Recibe la imagen, la comprime, evalúa con IA y sube a Firebase
+async function analizarYEnviarImagen(base64Original) {
+    if (!currentChatId) return;
+
+    // Bloquear botones durante el proceso
     btnAttachImg.disabled = true;
     btnTakePhoto.disabled = true;
     btnAttachImg.style.opacity = "0.5";
     btnTakePhoto.style.opacity = "0.5";
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async (event) => {
-        const base64Img = event.target.result;
+    try {
+        // ¡Magia! Comprimimos la imagen antes de hacer cualquier cosa
+        const base64Comprimida = await comprimirImagen(base64Original, 600);
 
-        // Crear elemento de imagen para la IA
+        // A. EVALUAR CON IA SILENCIOSAMENTE
         const imgElement = document.createElement('img');
-        imgElement.src = base64Img;
+        imgElement.src = base64Comprimida;
         
         imgElement.onload = async () => {
-            // 1. EVALUAR CON IA SILENCIOSAMENTE
             if (aiModel) {
                 const predictions = await aiModel.classify(imgElement);
                 const foodKeywords = ['food', 'dish', 'plate', 'meal', 'restaurant', 'fruit', 'vegetable', 'meat', 'bread', 'pizza', 'taco', 'guacamole', 'soup'];
@@ -771,46 +796,109 @@ const procesarImagenParaChat = async (e) => {
                 if (esComida) {
                     const myUserRef = doc(db, "usuarios", auth.currentUser.uid);
                     const myUserSnap = await getDoc(myUserRef);
-                    if (myUserSnap.exists()) {
-                        const userData = myUserSnap.data();
-                        if (!userData.retos_completados || !userData.retos_completados[3]) {
-                            await window.completeChallenge(3, "México en un plato", 12.5);
-                            alert("¡Qué rico se ve! Has completado el Reto 3."); // Alerta opcional, puedes quitarla si quieres que sea 100% silencioso
-                        }
+                    if (myUserSnap.exists() && (!myUserSnap.data().retos_completados || !myUserSnap.data().retos_completados[3])) {
+                        await window.completeChallenge(3, "México en un plato", 12.5);
                     }
                 }
             }
 
-            // 2. ENVIAR A FIREBASE
-            try {
-                const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
-                await addDoc(mensajesRef, {
-                    texto: "📷 Imagen", 
-                    imagenUrl: base64Img,
-                    senderId: auth.currentUser.uid,
-                    timestamp: serverTimestamp()
-                });
+            // B. ENVIAR LA IMAGEN COMPRIMIDA A FIREBASE
+            const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
+            await addDoc(mensajesRef, {
+                texto: "📷 Imagen", 
+                imagenUrl: base64Comprimida, // Guardamos la versión ligera
+                senderId: auth.currentUser.uid,
+                timestamp: serverTimestamp()
+            });
 
-                const chatRef = doc(db, "chats", currentChatId);
-                await updateDoc(chatRef, {
-                    ultimo_mensaje: "📷 Imagen enviada",
-                    fecha_actualizacion: serverTimestamp()
-                });
+            const chatRef = doc(db, "chats", currentChatId);
+            await updateDoc(chatRef, {
+                ultimo_mensaje: "📷 Imagen enviada",
+                fecha_actualizacion: serverTimestamp()
+            });
 
-            } catch (error) {
-                console.error("Error al enviar imagen:", error);
-            }
-
-            // 3. RESTAURAR INTERFAZ
+            // C. RESTAURAR INTERFAZ
             btnAttachImg.disabled = false;
             btnTakePhoto.disabled = false;
             btnAttachImg.style.opacity = "1";
             btnTakePhoto.style.opacity = "1";
-            e.target.value = ""; // Limpiar input 
         };
-    };
+    } catch (error) {
+        console.error("Error al procesar la imagen:", error);
+        alert("Hubo un problema procesando la imagen. Intenta con una más pequeña.");
+        btnAttachImg.disabled = false;
+        btnTakePhoto.disabled = false;
+        btnAttachImg.style.opacity = "1";
+        btnTakePhoto.style.opacity = "1";
+    }
+}
+
+// 3. Escuchar la selección de archivos (Galería o input de celular)
+const handleFileInput = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => analizarYEnviarImagen(event.target.result);
+    e.target.value = ""; // Limpiar input
 };
 
+chatImgInput.addEventListener('change', handleFileInput);
+chatCameraInput.addEventListener('change', handleFileInput);
+
+// Botón de Galería (Siempre abre explorador de archivos)
+btnAttachImg.addEventListener('click', () => chatImgInput.click());
+
+
+// 4. LÓGICA DE LA CÁMARA WEB (PC) Y CÁMARA NATIVA (MÓVIL)
+const webcamModal = document.getElementById('webcam-modal');
+const webcamVideo = document.getElementById('webcam-video');
+let stream = null;
+
+btnTakePhoto.addEventListener('click', async () => {
+    // Detectar si el usuario está en celular o tablet (Android/iOS)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Si es celular, el atributo 'capture' del HTML funciona perfecto para abrir su app de cámara
+        chatCameraInput.click();
+    } else {
+        // Si es computadora, abrimos nuestra propia ventana emergente de Webcam
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            webcamVideo.srcObject = stream;
+            webcamModal.style.display = 'flex';
+        } catch (err) {
+            alert("No pudimos acceder a tu cámara. Asegúrate de dar los permisos en tu navegador.");
+        }
+    }
+});
+
+// Cerrar ventana de Webcam
+document.getElementById('btn-close-webcam').addEventListener('click', () => {
+    webcamModal.style.display = 'none';
+    if (stream) stream.getTracks().forEach(track => track.stop());
+});
+
+// Tomar la foto con la Webcam
+document.getElementById('btn-capture-webcam').addEventListener('click', () => {
+    // Dibujar el fotograma actual del video en un Canvas invisible
+    const canvas = document.createElement('canvas');
+    canvas.width = webcamVideo.videoWidth;
+    canvas.height = webcamVideo.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
+    
+    // Obtener la imagen en Base64
+    const fotoBase64 = canvas.toDataURL('image/jpeg', 0.9);
+    
+    // Apagar cámara y cerrar ventana
+    webcamModal.style.display = 'none';
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    
+    // Enviar a nuestra función maestra de procesamiento
+    analizarYEnviarImagen(fotoBase64);
+});
 // Conectar ambos inputs ocultos a la misma función maestra
 chatImgInput.addEventListener('change', procesarImagenParaChat);
 chatCameraInput.addEventListener('change', procesarImagenParaChat);
