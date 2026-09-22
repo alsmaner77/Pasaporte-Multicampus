@@ -846,59 +846,67 @@ const handleFileInput = (e) => {
 chatImgInput.addEventListener('change', handleFileInput);
 chatCameraInput.addEventListener('change', handleFileInput);
 
-// Botón de Galería (Siempre abre explorador de archivos)
-btnAttachImg.addEventListener('click', () => chatImgInput.click());
-
+// Botón de Galería (Usamos onclick para borrar eventos viejos duplicados)
+btnAttachImg.onclick = (e) => {
+    e.preventDefault();
+    chatImgInput.click();
+};
 
 // 4. LÓGICA DE LA CÁMARA WEB (PC) Y CÁMARA NATIVA (MÓVIL)
 const webcamModal = document.getElementById('webcam-modal');
 const webcamVideo = document.getElementById('webcam-video');
 let stream = null;
 
-btnTakePhoto.addEventListener('click', async () => {
-    // Detectar si el usuario está en celular o tablet (Android/iOS)
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+// Botón de Cámara fotográfica
+btnTakePhoto.onclick = async (e) => {
+    e.preventDefault();
+
+    // Detección estricta para celulares y tablets
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // Si es celular, el atributo 'capture' del HTML funciona perfecto para abrir su app de cámara
+        // EN CELULARES: Abre directamente la cámara nativa del teléfono.
+        // El sistema operativo móvil gestiona sus propios permisos automáticamente.
         chatCameraInput.click();
-    } else {
-        // Si es computadora, abrimos nuestra propia ventana emergente de Webcam
-        try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            webcamVideo.srcObject = stream;
-            webcamModal.style.display = 'flex';
-        } catch (err) {
-            alert("No pudimos acceder a tu cámara. Asegúrate de dar los permisos en tu navegador.");
-        }
+        return; // IMPORTANTE: El 'return' hace que el código se detenga aquí y NO abra el marco negro de PC.
     }
-});
 
-// Cerrar ventana de Webcam
-document.getElementById('btn-close-webcam').addEventListener('click', () => {
+    // EN COMPUTADORAS: Si no es móvil, pide permiso y abre el marco web.
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        webcamVideo.srcObject = stream;
+        webcamModal.style.display = 'flex';
+    } catch (err) {
+        alert("Para tomar fotos, asegúrate de permitir el acceso a la cámara en tu navegador.");
+    }
+};
+
+// Cerrar ventana de Webcam (Computadoras)
+document.getElementById('btn-close-webcam').onclick = (e) => {
+    e.preventDefault();
     webcamModal.style.display = 'none';
     if (stream) stream.getTracks().forEach(track => track.stop());
-});
+};
 
-// Tomar la foto con la Webcam
-document.getElementById('btn-capture-webcam').addEventListener('click', () => {
-    // Dibujar el fotograma actual del video en un Canvas invisible
+// Tomar la foto con la Webcam (Computadoras)
+document.getElementById('btn-capture-webcam').onclick = (e) => {
+    e.preventDefault();
+    
+    // Dibujar el fotograma actual en un Canvas
     const canvas = document.createElement('canvas');
     canvas.width = webcamVideo.videoWidth;
     canvas.height = webcamVideo.videoHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
     
-    // Obtener la imagen en Base64
+    // Obtener la imagen y apagar cámara
     const fotoBase64 = canvas.toDataURL('image/jpeg', 0.9);
-    
-    // Apagar cámara y cerrar ventana
     webcamModal.style.display = 'none';
     if (stream) stream.getTracks().forEach(track => track.stop());
     
-    // Enviar a nuestra función maestra de procesamiento
+    // Enviar a procesar
     analizarYEnviarImagen(fotoBase64);
-});
+};
 // Conectar ambos inputs ocultos a la misma función maestra
 chatImgInput.addEventListener('change', procesarImagenParaChat);
 chatCameraInput.addEventListener('change', procesarImagenParaChat);
