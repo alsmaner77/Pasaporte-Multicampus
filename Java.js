@@ -57,7 +57,7 @@ onAuthStateChanged(auth, async (user) => {
             if (datosUsuario.foto_perfil && datosUsuario.foto_perfil.startsWith("data:image")) {
                 profilePic.src = datosUsuario.foto_perfil;
             } else {
-                profilePic.src = "https://via.placeholder.com/150";
+                profilePic.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='100%' height='100%' fill='%23ccc'/><text x='50% ' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666' font-family='sans-serif' font-size='14'>Sin Foto</text></svg>";
             }
 
             // Restaurar progreso guardado
