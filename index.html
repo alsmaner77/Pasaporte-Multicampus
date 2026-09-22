@@ -253,6 +253,37 @@ onAuthStateChanged(auth, async (user) => {
             const datosUsuario = docSnap.data();
             console.log("Datos del estudiante:", datosUsuario);
             
+            // --- AQUÍ VA LA LÓGICA DE LAS 8 SEMANAS (PASO 2) ---
+            if (datosUsuario.fecha_registro) {
+                const fechaRegistro = new Date(datosUsuario.fecha_registro);
+                const fechaActual = new Date();
+                const diferenciaDias = (fechaActual - fechaRegistro) / (1000 * 60 * 60 * 24);
+                const LIMITE_DIAS = 56; // 8 semanas equivalen a 56 días
+
+                if (diferenciaDias > LIMITE_DIAS) {
+                    // Si pasaron 8 semanas, reiniciamos el progreso en Firestore
+                    await updateDoc(docRef, {
+                        retos_completados: {},
+                        progreso_porcentaje: 0,
+                        fecha_registro: new Date().toISOString()
+                    });
+                    console.log("El ciclo de 8 semanas ha concluido. El pasaporte se ha reiniciado.");
+                    window.location.reload();
+                    return;
+                }
+            }
+
+            // Restaurar el porcentaje de progreso visual si ya estaba guardado
+            if (datosUsuario.progreso_porcentaje) {
+                progress = datosUsuario.progreso_porcentaje;
+                const progressBar = document.getElementById("progress-fill");
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                    progressBar.innerText = `${progress}%`;
+                }
+            }
+            // ----------------------------------------------------
+
             // Inyectar datos en la pantalla de Perfil
             profileEmail.textContent = datosUsuario.correo || user.email;
             profileCampus.textContent = "Campus: " + (datosUsuario.campus || "No definido");
