@@ -1,26 +1,16 @@
-// Manejo de pestañas de navegación
-window.openTab=function(evt, tabName) {
-    const tabContents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].classList.remove("active");
-    }
+// 1. IMPORTACIONES DE FIREBASE (¡Siempre van estrictamente arriba del todo!)
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const tabBtns = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < tabBtns.length; i++) {
-        tabBtns[i].classList.remove("active");
-    }
-
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
-}
-
-// Variables globales necesarias para el funcionamiento
-// 1. VARIABLES GLOBALES (Deben ir arriba del todo para que todas las funciones las lean)
+// 2. VARIABLES GLOBALES
+let dbInstance = null;
+let authInstance = null;
 let progress = 0;
 let completedChallenges = 0;
 const mockCities = ["Campus Monterrey", "Campus Guadalajara", "Campus Puebla", "Campus Querétaro"];
 
-// 2. NAVEGACIÓN ENTRE PESTAÑAS (Expuesta globalmente)
+// 3. NAVEGACIÓN ENTRE PESTAÑAS (Expuesta globalmente)
 window.openTab = function(evt, tabName) {
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
@@ -44,29 +34,88 @@ window.openTab = function(evt, tabName) {
     }
 };
 
-// 3. LÓGICA DE LOS RETOS Y GUARDADO EN FIRESTORE
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// 4. OBSERVADOR DE AUTENTICACIÓN PRINCIPAL
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        authInstance = auth;
+        dbInstance = getFirestore();
 
+        loginScreen.style.display = 'none';
+        appContent.style.display = 'block'; 
+
+        const docRef = doc(dbInstance, "usuarios", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const datosUsuario = docSnap.data();
+            
+            // Inyectar datos reales en la pantalla de Perfil
+            profileEmail.textContent = datosUsuario.correo || user.email;
+            profileCampus.textContent = "Campus: " + (datosUsuario.campus || "No definido");
+            
+            // Cargar la foto de perfil de manera segura
+            if (datosUsuario.foto_perfil && datosUsuario.foto_perfil.startsWith("data:image")) {
+                profilePic.src = datosUsuario.foto_perfil;
+            } else {
+                profilePic.src = "https://via.placeholder.com/150";
+            }
+
+            // Restaurar progreso guardado
+            if (datosUsuario.progreso_porcentaje) {
+                progress = datosUsuario.progreso_porcentaje;
+                const progressBar = document.getElementById("progress-fill");
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                    progressBar.innerText = `${progress}%`;
+                }
+            }
+
+            // Opcional: Si quieres restaurar los retos completados visualmente al recargar la página
+            if (datosUsuario.retos_completados) {
+                for (const [retoId, completado] of Object.entries(datosUsuario.retos_completados)) {
+                    if (completado) {
+                        const btn = document.querySelector(`#reto-${retoId} button`);
+                        if (btn) {
+                            btn.innerText = "Reto Completado ✅";
+                            btn.disabled = true;
+                            btn.style.backgroundColor = "#28a745";
+                            btn.style.color = "white";
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        loginScreen.style.display = 'flex';
+        appContent.style.display = 'none';
+    }
+});
+
+// 5. LÓGICA DE LOS RETOS Y GUARDADO EN FIRESTORE
 window.completeChallenge = async function(challengeId, badgeName, progressIncrease) {
-    const authInstance = getAuth();
-    const dbInstance = getFirestore();
+    const currentAuth = getAuth();
+    const currentDb = getFirestore();
 
-    if (!authInstance.currentUser) {
+    if (!currentAuth.currentUser) {
         alert("Debes iniciar sesión para registrar el reto.");
         return;
     }
 
-    const userId = authInstance.currentUser.uid;
-    const userRef = doc(dbInstance, "usuarios", userId);
+    const userId = currentAuth.currentUser.uid;
+    const userRef = doc(currentDb, "usuarios", userId);
 
     try {
+        // Evitar que el progreso supere el 100%
+        let nuevoProgreso = progress + progressIncrease;
+        if (nuevoProgreso > 100) nuevoProgreso = 100;
+
+        // Guardar cambios en Firestore
         await updateDoc(userRef, {
             [`retos_completados.${challengeId}`]: true,
-            progreso_porcentaje: progress + progressIncrease
+            progreso_porcentaje: nuevoProgreso
         });
 
-        // El resto de tu código de actualización visual...
+        // Actualizar botón del reto
         const btn = document.querySelector(`#reto-${challengeId} button`);
         if (btn) {
             btn.innerText = "Reto Completado ✅";
@@ -75,19 +124,22 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
             btn.style.color = "white";
         }
 
+        // Desbloquear Insignia correspondiente
         const badge = document.getElementById(`badge-${badgeName}`);
         if (badge) {
             badge.classList.remove("locked");
             badge.classList.add("unlocked");
         }
 
-        progress += progressIncrease;
+        // Actualizar Barra de Progreso global
+        progress = nuevoProgreso;
         const progressBar = document.getElementById("progress-fill");
         if (progressBar) {
             progressBar.style.width = `${progress}%`;
             progressBar.innerText = `${progress}%`;
         }
 
+        // Registrar conexión en el Mapa
         const connectionsList = document.getElementById("connections-list");
         const emptyState = document.querySelector(".empty-state");
         if (emptyState) {
@@ -103,19 +155,10 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
 
         completedChallenges++;
 
-        if (completedChallenges === 5) {
-            setTimeout(() => {
-                alert("¡Felicidades! Has completado las experiencias principales y desbloqueado la insignia de Explorador Nacional.");
-                const badgeNacional = document.getElementById("badge-Explorador Nacional");
-                if (badgeNacional) {
-                    badgeNacional.classList.remove("locked");
-                    badgeNacional.classList.add("unlocked");
-                }
-            }, 500);
-        }
+        alert("¡Reto completado y guardado con éxito!");
 
     } catch (error) {
-        console.error("Error al guardar el reto:", error);
-        alert("Hubo un error al guardar tu progreso en la base de datos.");
+        console.error("Error al guardar el reto en Firestore:", error);
+        alert("Hubo un error al guardar tu progreso. Revisa la consola.");
     }
 };
