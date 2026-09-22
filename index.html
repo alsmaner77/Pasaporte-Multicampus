@@ -46,6 +46,7 @@
             <button class="tab-btn active" onclick="openTab(event, 'retos')">Retos Semanales</button>
             <button class="tab-btn" onclick="openTab(event, 'mapa')">Mapa y Conexiones</button>
             <button class="tab-btn" onclick="openTab(event, 'insignias')">Insignias</button>
+            <button class="tab-btn" onclick="openTab(event, 'perfil')">👤 Mi Perfil</button>
         </nav>
 
         <main>
@@ -132,6 +133,34 @@
             </div>
         </section>
 
+            <!-- Sección de Perfil -->
+        <section id="perfil" class="tab-content">
+            <h2>Mi Perfil</h2>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img id="profile-pic" src="https://via.placeholder.com/150" alt="Foto de perfil" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #003366; margin-bottom: 10px;">
+                <br>
+                <!-- Input oculto para cargar archivos de imagen -->
+                <input type="file" id="upload-pic" accept="image/*" style="display: none;">
+                <button onclick="document.getElementById('upload-pic').click()" style="padding: 8px 15px; background-color: #FFC000; border: none; border-radius: 5px; cursor: pointer; color: #003366; font-weight: bold;">Cambiar Foto</button>
+            </div>
+        
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 id="profile-email" style="margin-bottom: 5px; color: #003366;">Cargando...</h3>
+                <p id="profile-campus" style="margin: 0; color: #666;">Cargando campus...</p>
+            </div>
+        
+            <h3>Insignias Conseguidas</h3>
+            <div id="earned-badges" class="badges-grid" style="margin-bottom: 30px;">
+                <!-- Las insignias desbloqueadas se clonarán aquí mediante JavaScript -->
+                <p id="no-badges-msg" style="color: #666;">Aún no has conseguido insignias.</p>
+            </div>
+        
+            <div style="text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
+                <button id="btn-logout" style="padding: 10px 20px; background-color: #d9534f; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Cerrar Sesión</button>
+            </div>
+        </section>
+
         </main>
         
     </div> <!-- Fin del contenedor principal -->
@@ -142,7 +171,7 @@
   // 1. Importar los módulos de Firebase directamente (CDN)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   // 2. Tu configuración de Firebase (Cópiala de la consola)
   const firebaseConfig = {
@@ -170,7 +199,11 @@ const campusSelect = document.getElementById('campus-select');
 const btnLogin = document.getElementById('btn-login');
 const btnRegister = document.getElementById('btn-register');
 const errorMsg = document.getElementById('auth-error');
-
+const btnLogout = document.getElementById('btn-logout');
+const uploadPic = document.getElementById('upload-pic');
+const profilePic = document.getElementById('profile-pic');
+const profileEmail = document.getElementById('profile-email');
+const profileCampus = document.getElementById('profile-campus');
 const loginScreen = document.getElementById('login-screen');
 const appContent = document.getElementById('app-content'); 
 
@@ -224,6 +257,28 @@ onAuthStateChanged(auth, async (user) => {
         // No hay usuario: Mostrar login
         loginScreen.style.display = 'flex';
         appContent.style.display = 'none';
+    }
+});
+btnLogout.addEventListener('click', async () => {
+    await signOut(auth);
+    // El onAuthStateChanged detectará la salida y mostrará el login automáticamente
+});
+
+// 2. Cambiar foto de perfil
+uploadPic.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file && auth.currentUser) {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64String = reader.result;
+            profilePic.src = base64String; // Actualiza la imagen en la interfaz
+            
+            // Guarda la nueva imagen en Firestore
+            const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            await updateDoc(userRef, { foto_perfil: base64String });
+        };
+        // Convierte la imagen a un formato de texto seguro para la base de datos
+        reader.readAsDataURL(file);
     }
 });
 </script>
