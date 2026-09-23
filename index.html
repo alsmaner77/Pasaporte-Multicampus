@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasaporte Multicampus ✈️✨</title>
+    <title>Pasaporte Multicampus</title>
     <link rel="stylesheet" href="Interfaz.css">
     <!-- Google Fonts para un look más moderno y juvenil -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,11 +15,11 @@
     <!-- Modal para cámara -->
     <div id="webcam-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
         <div style="background: #1a1a1a; border: 3px solid #00FFCC; padding: 25px; border-radius: 15px; text-align: center; width: 90%; max-width: 500px; box-shadow: 0 0 30px rgba(0,255,204,0.3);">
-            <h3 style="margin-top: 0; color: #00FFCC; font-family: 'Space Grotesk', sans-serif;">🛂 Captura Multicampus</h3>
+            <h3 style="margin-top: 0; color: #00FFCC; font-family: 'Space Grotesk', sans-serif;">Tomar Foto</h3>
             <video id="webcam-video" autoplay playsinline style="width: 100%; border-radius: 10px; background: #000; margin-bottom: 15px; border: 2px solid #fff;"></video>
             
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button id="btn-capture-webcam" style="background-color: #00FFCC; color: #121212; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">📸 Disparar</button>
+                <button id="btn-capture-webcam" style="background-color: #00FFCC; color: #121212; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">📸 Capturar</button>
                 <button id="btn-close-webcam" style="background-color: #FF007F; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;">✖ Cancelar</button>
             </div>
         </div>
@@ -29,16 +29,16 @@
     <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);">
         
         <div style="background: #161622; border: 3px solid #FF007F; padding: 40px; border-radius: 20px; box-shadow: 8px 8px 0px #00FFCC; width: 100%; max-width: 420px; text-align: center; position: relative;">
-            <div style="position: absolute; top: -20px; right: 20px; background: #FFC000; color: #000; font-weight: bold; padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 2px solid #000;">Vuelo 2026 🚀</div>
+            <div style="position: absolute; top: -20px; right: 20px; background: #FFC000; color: #000; font-weight: bold; padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 2px solid #000;">Shift 2026 </div>
             
-            <h2 id="auth-title" style="color: #ffffff; margin-bottom: 25px; font-family: 'Space Grotesk', sans-serif; font-size: 26px;">✈️ Boarding Pass Multicampus</h2>
+            <h2 id="auth-title" style="color: #ffffff; margin-bottom: 25px; font-family: 'Space Grotesk', sans-serif; font-size: 26px;">Pasaporte Multicampus</h2>
             
-            <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none; font-size: 15px;">
-            <input type="password" id="password" placeholder="Contraseña secreta" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none; font-size: 15px;">
+            <input type="email" id="email" placeholder="Correo" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none; font-size: 15px;">
+            <input type="password" id="password" placeholder="Contraseña" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none; font-size: 15px;">
             
             <div id="register-fields" style="display: none;">
                 <select id="campus-select" style="width: 100%; padding: 14px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none;">
-                    <option value="" disabled selected>Selecciona tu Campus Base</option>
+                    <option value="" disabled selected>Selecciona tu Campus</option>
                     <option value="Aguascalientes">Aguascalientes</option>
                     <option value="Chihuahua">Chihuahua</option>
                     <option value="Ciudad Juárez">Ciudad Juárez</option>
@@ -94,11 +94,11 @@
 
             <p id="auth-error" style="color: #FF007F; font-size: 14px; display: none; margin-bottom: 15px; font-weight: bold;"></p>
 
-            <button id="btn-login-action" style="width: 100%; padding: 14px; background-color: #00FFCC; color: #121212; border: 2px solid #000; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 15px; box-shadow: 4px 4px 0px #fff; transition: 0.2s;">Iniciar Viaje ✈️</button>
-            <button id="btn-register-action" style="width: 100%; padding: 14px; background-color: #FF007F; color: white; border: 2px solid #000; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; display: none; margin-bottom: 15px; box-shadow: 4px 4px 0px #fff;">Emitir Pasaporte 🎫</button>
+            <button id="btn-login-action" style="width: 100%; padding: 14px; background-color: #00FFCC; color: #121212; border: 2px solid #000; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 15px; box-shadow: 4px 4px 0px #fff; transition: 0.2s;">Iniciar Sesión</button>
+            <button id="btn-register-action" style="width: 100%; padding: 14px; background-color: #FF007F; color: white; border: 2px solid #000; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; display: none; margin-bottom: 15px; box-shadow: 4px 4px 0px #fff;">Crear Cuenta</button>
 
             <p style="font-size: 14px; margin-top: 15px; color: #aaa;">
-                <span id="text-toggle">¿Nuevo explorador?</span> 
+                <span id="text-toggle">¿No tienes cuenta?</span> 
                 <a href="#" id="link-toggle" style="color: #00FFCC; text-decoration: none; font-weight: bold; margin-left: 5px;">Regístrate aquí</a>
             </p>
         </div>
