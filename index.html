@@ -108,15 +108,13 @@
     <div id="app-content" style="display: none;">
         
         <header class="passport-header">
-            <div class="passport-stamp">🛂 VISA MULTICAMPUS</div>
-            <h1>PASAPORTE MULTICAMPUS</h1>
-            <p>✈️ Destino: Conexión Total Sin Fronteras 🌎</p>
+            <div class="passport-stamp">SHIFT 2026</div>
+            <h1>PASAPORTE MULTICAMPUS</h1>            
         </header>
 
         <div class="progress-section">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; font-size: 14px;">
-                <span>STATUS DE EXPEDICIÓN</span>
-                <span id="progress-text-label" style="color: #00FFCC;">Nivel: Viajero Frecuente</span>
+                <span>Progreso de la Experiencia</span>                
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill">0%</div>
@@ -124,12 +122,12 @@
         </div>
 
         <nav class="tabs">
-            <button class="tab-btn active" onclick="openTab(event, 'retos')">🎯 Retos</button>
-            <button class="tab-btn" onclick="openTab(event, 'mapa')">🗺️ Mapa</button>
+            <button class="tab-btn active" onclick="openTab(event, 'retos')">🎯 Retos Semanales</button>
+            <button class="tab-btn" onclick="openTab(event, 'mapa')">🗺️ Mapa de tus Conexiones</button>
             <button class="tab-btn" onclick="openTab(event, 'insignias')">🏆 Insignias</button>
-            <button class="tab-btn" onclick="openTab(event, 'conexion')">🎲 Radar</button>
+            <button class="tab-btn" onclick="openTab(event, 'conexion')">👥 Crear Conexiones</button>
             <button class="tab-btn" onclick="openTab(event, 'mensajes')">💬 Chats</button>
-            <button class="tab-btn" onclick="openTab(event, 'perfil')">👤 Perfil</button>
+            <button class="tab-btn" onclick="openTab(event, 'perfil')">👤 Mi Perfil</button>
         </nav>
 
         <main>
@@ -175,7 +173,7 @@
 
             <!-- Sección de Mapa y Conexiones -->
             <section id="mapa" class="tab-content">
-                <h2>Pasaporte Geográfico</h2>
+                <h2>Mi Mapa de Conexiones</h2>
                 <p>Tus conexiones iluminan el mapa nacional en tiempo real.</p>
             
                 <div class="map-container" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; background: transparent; padding: 0;">
@@ -217,7 +215,7 @@
 
             <!-- Sección de Insignias -->
             <section id="insignias" class="tab-content">
-                <h2>Sellos y Visas Obtenidas</h2>
+                <h2>Insignias Obtenidas</h2>
                 <div class="badges-grid">
                     <div class="badge locked" id="badge-México conectado">
                         <div class="icon">🌎</div>
@@ -254,24 +252,24 @@
                 
             <!-- PESTAÑA: Descubrir -->
             <section id="conexion" class="tab-content">
-                <h2>Radar Multicampus 📡</h2>
+                <h2>Descubre a tu próximo amigo</h2>
                 <div style="text-align: center; padding: 40px; background: #161622; border-radius: 15px; border: 2px solid #00FFCC; box-shadow: 6px 6px 0px #FF007F;">
-                    <p style="font-size: 16px; margin-bottom: 25px; color: #ccc;">Activa el radar para conectar instantáneamente con estudiantes de otra latitud académica.</p>
+                    <p style="font-size: 16px; margin-bottom: 25px; color: #ccc;">¡Anímate a conocer a alguien nuevo!</p>
                     <button id="btn-find-partner" style="padding: 16px 35px; background-color: #00FFCC; color: #121212; border: 2px solid #000; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 18px; box-shadow: 4px 4px 0px #fff; transition: 0.2s;">
                         ⚡ Buscar Conexión Aleatoria
                     </button>
-                    <p id="search-status" style="display: none; color: #00FFCC; margin-top: 20px; font-weight: bold; font-size: 16px;">🛰️ Sintonizando frecuencias de campus...</p>
+                    <p id="search-status" style="display: none; color: #00FFCC; margin-top: 20px; font-weight: bold; font-size: 16px;">Sintonizando frecuencias de campus...</p>
                 </div>
             </section>
 
             <!-- PESTAÑA: Mensajes -->
             <section id="mensajes" class="tab-content">
-                <h2>Comunicaciones Globales</h2>
+                <h2>Bandeja de Entrada</h2>
 
                 <div id="inbox-view">
                     <ul id="chats-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
                         <li id="empty-chats-msg" style="color: #aaa; text-align: center; padding: 35px; background: #161622; border-radius: 12px; border: 2px dashed #444;">
-                            Aún no hay transmisiones activas. ¡Usa el "Radar" para despegar! 🚀
+                            Aún no tienes mensajes. ¡Ve a la pestaña "Crear Conexiones" para conocer a alguien!
                         </li>
                     </ul>
                 </div>
@@ -324,13 +322,13 @@
                     <p id="profile-campus" style="margin: 0; color: #aaa; font-weight: bold;">Cargando base...</p>
                 </div>
             
-                <h3 style="color: #fff; border-bottom: 2px solid #333; padding-bottom: 8px;">Visas y Sellos en el Pasaporte</h3>
+                <h3 style="color: #fff; border-bottom: 2px solid #333; padding-bottom: 8px;">Insignias y Sellos en el Pasaporte</h3>
                 <div id="earned-badges" class="badges-grid" style="margin-bottom: 30px;">
                     <p id="no-badges-msg" style="color: #888;">Tu pasaporte aún no registra sellos oficiales.</p>
                 </div>
             
                 <div style="text-align: center; border-top: 2px solid #222; padding-top: 25px;">
-                    <button id="btn-logout" style="padding: 12px 25px; background-color: #222; color: #FF007F; border: 2px solid #FF007F; border-radius: 8px; cursor: pointer; font-weight: bold;">Cerrar Sesión 🔒</button>
+                    <button id="btn-logout" style="padding: 12px 25px; background-color: #222; color: #FF007F; border: 2px solid #FF007F; border-radius: 8px; cursor: pointer; font-weight: bold;">Cerrar Sesión</button>
                 </div>
             </section>
         </main>
