@@ -747,7 +747,6 @@ function comprimirImagen(base64Str, maxWidth = 800) {
             let width = img.width;
             let height = img.height;
 
-            // Mantener proporción si la imagen es muy grande
             if (width > maxWidth) {
                 height = Math.round((height *= maxWidth / width));
                 width = maxWidth;
@@ -758,31 +757,27 @@ function comprimirImagen(base64Str, maxWidth = 800) {
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Exportar como JPEG al 70% de calidad (Súper ligero)
             resolve(canvas.toDataURL('image/jpeg', 0.7)); 
         };
     });
 }
 
-// 2. Función maestra: Recibe la imagen, la comprime, evalúa con IA y sube a Firebase
+// 2. Función maestra: Recibe la imagen, la comprime, evalúa con IA, desbloquea el reto y sube a Firebase
 async function analizarYEnviarImagen(base64Original) {
     if (!currentChatId) return;
 
-    // Bloquear botones durante el proceso
     btnAttachImg.disabled = true;
     btnTakePhoto.disabled = true;
     btnAttachImg.style.opacity = "0.5";
     btnTakePhoto.style.opacity = "0.5";
 
     try {
-        // ¡Magia! Comprimimos la imagen antes de hacer cualquier cosa
         const base64Comprimida = await comprimirImagen(base64Original, 600);
-
-        // A. EVALUAR CON IA SILENCIOSAMENTE
         const imgElement = document.createElement('img');
         imgElement.src = base64Comprimida;
         
         imgElement.onload = async () => {
+            // A. EVALUAR CON IA SILENCIOSAMENTE
             if (aiModel) {
                 const predictions = await aiModel.classify(imgElement);
                 const foodKeywords = ['food', 'dish', 'plate', 'meal', 'restaurant', 'fruit', 'vegetable', 'meat', 'bread', 'pizza', 'taco', 'guacamole', 'soup'];
@@ -800,11 +795,11 @@ async function analizarYEnviarImagen(base64Original) {
                 }
             }
 
-            // B. ENVIAR LA IMAGEN COMPRIMIDA A FIREBASE
+            // B. ENVIAR A FIREBASE
             const mensajesRef = collection(db, "chats", currentChatId, "mensajes");
             await addDoc(mensajesRef, {
                 texto: "📷 Imagen", 
-                imagenUrl: base64Comprimida, // Guardamos la versión ligera
+                imagenUrl: base64Comprimida,
                 senderId: auth.currentUser.uid,
                 timestamp: serverTimestamp()
             });
@@ -815,7 +810,6 @@ async function analizarYEnviarImagen(base64Original) {
                 fecha_actualizacion: serverTimestamp()
             });
 
-            // C. RESTAURAR INTERFAZ
             btnAttachImg.disabled = false;
             btnTakePhoto.disabled = false;
             btnAttachImg.style.opacity = "1";
@@ -831,77 +825,61 @@ async function analizarYEnviarImagen(base64Original) {
     }
 }
 
-// 3. Escuchar la selección de archivos (Galería o input de celular)
-const handleFileInput = (e) => {
+// 3. Escuchar la galería de archivos
+chatImgInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event) => analizarYEnviarImagen(event.target.result);
-    e.target.value = ""; // Limpiar input
-};
+    e.target.value = ""; 
+});
 
-chatImgInput.addEventListener('change', handleFileInput);
-chatCameraInput.addEventListener('change', handleFileInput);
-
-// Botón de Galería (Usamos onclick para borrar eventos viejos duplicados)
 btnAttachImg.onclick = (e) => {
     e.preventDefault();
     chatImgInput.click();
 };
 
-// 4. LÓGICA DE LA CÁMARA WEB (PC) Y CÁMARA NATIVA (MÓVIL)
+// 4. LÓGICA UNIVERSAL DE CÁMARA (Funciona idéntico en Celular y PC usando el Modal)
 const webcamModal = document.getElementById('webcam-modal');
 const webcamVideo = document.getElementById('webcam-video');
 let stream = null;
 
-// Botón de Cámara fotográfica
 btnTakePhoto.onclick = async (e) => {
     e.preventDefault();
 
-    // Detección estricta para celulares y tablets
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        // EN CELULARES: Abre directamente la cámara nativa del teléfono.
-        // El sistema operativo móvil gestiona sus propios permisos automáticamente.
-        chatCameraInput.click();
-        return; // IMPORTANTE: El 'return' hace que el código se detenga aquí y NO abra el marco negro de PC.
-    }
-
-    // EN COMPUTADORAS: Si no es móvil, pide permiso y abre el marco web.
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Pide permisos limpios y abre el visor de cámara en cualquier dispositivo (móvil o PC)
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } // Intenta usar la cámara trasera por defecto en celulares
+        });
         webcamVideo.srcObject = stream;
         webcamModal.style.display = 'flex';
     } catch (err) {
-        alert("Para tomar fotos, asegúrate de permitir el acceso a la cámara en tu navegador.");
+        alert("No se pudo acceder a la cámara. Por favor, asegúrate de dar permisos en tu navegador.");
     }
 };
 
-// Cerrar ventana de Webcam (Computadoras)
+// Cerrar ventana de Cámara
 document.getElementById('btn-close-webcam').onclick = (e) => {
     e.preventDefault();
     webcamModal.style.display = 'none';
     if (stream) stream.getTracks().forEach(track => track.stop());
 };
 
-// Tomar la foto con la Webcam (Computadoras)
+// Capturar la foto desde el visor universal
 document.getElementById('btn-capture-webcam').onclick = (e) => {
     e.preventDefault();
     
-    // Dibujar el fotograma actual en un Canvas
     const canvas = document.createElement('canvas');
     canvas.width = webcamVideo.videoWidth;
     canvas.height = webcamVideo.videoHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
     
-    // Obtener la imagen y apagar cámara
     const fotoBase64 = canvas.toDataURL('image/jpeg', 0.9);
     webcamModal.style.display = 'none';
     if (stream) stream.getTracks().forEach(track => track.stop());
     
-    // Enviar a procesar
     analizarYEnviarImagen(fotoBase64);
 };
