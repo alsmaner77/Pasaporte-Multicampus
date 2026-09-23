@@ -1,110 +1,185 @@
 :root {
-    --primary-color: #003366; /* Azul institucional */
-    --secondary-color: #00CC99; /* Verde de progreso */
-    --bg-color: #f4f7f6;
-    --card-bg: #ffffff;
-    --text-color: #333333;
+    --primary-color: #00FFCC; /* Turquesa Neón / Identidad digital */
+    --secondary-color: #FF007F; /* Magenta vibrante */
+    --accent-color: #FFC000; /* Amarillo eléctrico */
+    --bg-color: #0f0f1a; /* Fondo espacio oscuro */
+    --card-bg: #161622; /* Tarjetas oscuras texturizadas */
+    --text-color: #ffffff;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
-header {
-    background-color: var(--primary-color);
+/* Cabecera estilo Pasaporte Internacional */
+.passport-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #161622 100%);
     color: white;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 2.5rem 1rem;
+    border-bottom: 4px solid var(--secondary-color);
+    position: relative;
+    box-shadow: 0 10px 30px rgba(255, 0, 127, 0.15);
 }
 
-header p { margin: 0; font-size: 1.1rem; opacity: 0.9; }
+.passport-stamp {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: var(--accent-color);
+    color: #000;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 2px dashed #000;
+    transform: rotate(5deg);
+}
+
+.passport-header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+}
+
+.passport-header p { 
+    margin: 8px 0 0 0; 
+    font-size: 1rem; 
+    color: #aaa; 
+}
 
 .progress-section {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 25px auto;
     padding: 0 20px;
 }
 
 .progress-bar {
-    background-color: #e0e0e0;
-    border-radius: 25px;
+    background-color: #222;
+    border-radius: 8px;
     width: 100%;
-    height: 25px;
+    height: 22px;
     overflow: hidden;
+    border: 2px solid #444;
 }
 
 .progress-fill {
-    background-color: var(--secondary-color);
+    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
     height: 100%;
     width: 0%;
     text-align: center;
-    color: white;
-    font-weight: bold;
-    line-height: 25px;
-    transition: width 0.5s ease-in-out;
+    color: #000;
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 20px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Pestañas de Navegación extravagantes */
 .tabs {
     display: flex;
     justify-content: center;
-    background-color: var(--card-bg);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+    background-color: #12121b;
+    border-bottom: 2px solid #222;
+    overflow-x: auto;
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 15px 30px;
-    font-size: 1rem;
+    padding: 15px 22px;
+    font-size: 0.95rem;
     cursor: pointer;
-    font-weight: bold;
-    color: #666;
+    font-weight: 700;
+    color: #777;
     border-bottom: 3px solid transparent;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
 }
 
 .tab-btn.active {
     color: var(--primary-color);
     border-bottom: 3px solid var(--primary-color);
+    background: rgba(0, 255, 204, 0.05);
 }
 
 main {
     max-width: 800px;
     margin: 0 auto;
-    padding: 0 20px 40px;
+    padding: 20px 20px 50px;
 }
 
 .tab-content { display: none; }
-.tab-content.active { display: block; }
+.tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tarjetas de retos estilo Tarjeta de Embarque */
 .challenge-card {
     background: var(--card-bg);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border-left: 5px solid var(--primary-color);
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    box-shadow: 4px 4px 0px rgba(0, 255, 204, 0.15);
+    border: 2px solid #333;
+    border-left: 6px solid var(--primary-color);
+    color: var(--text-color);
+    transition: transform 0.2s;
+}
+
+.challenge-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+.challenge-card h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.challenge-card p {
+    color: #ccc;
+    font-size: 14px;
 }
 
 .challenge-card button {
     background-color: var(--primary-color);
-    color: white;
-    border: none;
+    color: #121212;
+    border: 2px solid #000;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 900;
+    box-shadow: 2px 2px 0px #fff;
+    transition: 0.1s;
+}
+
+.challenge-card button:hover {
+    background-color: #fff;
 }
 
 .challenge-card button:disabled {
-    background-color: #cccccc;
+    background-color: #222 !important;
+    color: #555 !important;
+    border-color: #444;
+    box-shadow: none;
     cursor: not-allowed;
 }
 
+/* Insignias estilo Sellos Postales */
 .badges-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -113,32 +188,37 @@ main {
 
 .badge {
     background: var(--card-bg);
-    padding: 20px;
-    border-radius: 10px;
+    padding: 22px;
+    border-radius: 15px;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 2px solid #333;
+    box-shadow: 4px 4px 0px rgba(255, 0, 127, 0.2);
     transition: all 0.3s ease;
 }
 
 .badge.locked {
     filter: grayscale(100%);
-    opacity: 0.5;
+    opacity: 0.3;
+    border-color: #222;
 }
 
 .badge.unlocked {
     filter: grayscale(0%);
     opacity: 1;
     border: 2px solid var(--secondary-color);
+    background: linear-gradient(135deg, #161622 0%, #22162b 100%);
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
 }
 
-.badge .icon { font-size: 3rem; margin-bottom: 10px; }
-.badge p { font-weight: bold; margin: 0 0 5px 0; }
-.badge small { color: #666; }
+.badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
+.badge p { font-weight: bold; margin: 0 0 5px 0; color: #fff; }
+.badge small { color: #aaa; font-size: 12px; }
 
 .map-container {
     background: var(--card-bg);
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 15px;
+    border: 2px solid #333;
 }
 
 #connections-list {
@@ -147,61 +227,60 @@ main {
 }
 
 #connections-list li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    padding: 12px;
+    border-bottom: 1px solid #222;
+    color: #ccc;
 }
 #connections-list li::before {
-    content: "📍 ";
+    content: "🛸 ";
 }
-.empty-state::before { content: "" !important; }
 
-/* Estilo base del punto (campus sin conexiones) */
+/* Pines interactivos en el Mapa */
 .campus-pin {
     position: absolute;
-    width: 15px;
-    height: 15px;
-    background-color: #cccccc;
+    width: 14px;
+    height: 14px;
+    background-color: #444;
     border: 2px solid white;
     border-radius: 50%;
-    transform: translate(-50%, -50%); /* Centra el punto exacto en la coordenada */
+    transform: translate(-50%, -50%);
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-/* Estado Iluminado (campus con al menos 1 conexión) */
 .campus-pin.active {
-    background-color: #00CC99; /* Tu color secundario */
-    box-shadow: 0 0 10px 3px rgba(0, 204, 153, 0.6);
-    animation: pulse 2s infinite;
+    background-color: var(--primary-color);
+    box-shadow: 0 0 12px 4px var(--primary-color);
+    animation: pulse 1.8s infinite;
 }
 
 @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 204, 153, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(0, 204, 153, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 204, 153, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.8); }
+    70% { box-shadow: 0 0 0 12px rgba(0, 255, 204, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); }
 }
 
-/* Etiqueta flotante oculta por defecto */
 .pin-tooltip {
     position: absolute;
-    bottom: 150%;
+    bottom: 160%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #003366;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
+    background-color: #0f0f1a;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: bold;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease;
     pointer-events: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* Mostrar etiqueta al pasar el mouse */
 .campus-pin:hover .pin-tooltip {
     opacity: 1;
     visibility: visible;
