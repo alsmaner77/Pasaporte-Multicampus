@@ -181,77 +181,99 @@ main {
 }
 
 /* Insignias estilo Sellos Postales */
-/* --- APARIENCIA DE MEDALLAS CIRCULARES --- */
+/* --- APARIENCIA DE MEDALLONES REALISTAS --- */
 
 .badges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 30px;
     justify-items: center;
 }
 
-/* Medalla Base */
+/* Medalla Base (Volumen y Forma) */
 .badge {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    width: 150px; /* Ancho y alto deben ser iguales para un círculo perfecto */
-    height: 150px;
-    padding: 15px;
-    border-radius: 50%; /* Esto las hace perfectamente redondas */
+    width: 140px; 
+    height: 140px;
+    border-radius: 50%;
     text-align: center;
-    border: 6px solid #cbd5e1; /* Borde metálico grueso */
-    box-shadow: 0 8px 0px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(255,255,255,0.7);
-    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     margin: 10px auto;
+    padding: 10px;
+    /* Efecto plomo opaco para medallas bloqueadas */
+    background: radial-gradient(circle at 30% 30%, #e2e8f0 0%, #94a3b8 60%, #475569 100%);
+    border: 4px solid #cbd5e1;
+    box-shadow: 
+        inset 0 0 15px rgba(0,0,0,0.4), /* Hundimiento interior */
+        0 10px 15px rgba(0,0,0,0.3), /* Sombra física */
+        0 20px 20px rgba(0,0,0,0.15); 
 }
 
-/* Estado Bloqueado: Medalla de plomo opaca */
+/* Aro interior tallado (Detalle realista de moneda/medalla) */
+.badge::before {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px; right: 4px; bottom: 4px;
+    border-radius: 50%;
+    border: 1px dashed rgba(0,0,0,0.15);
+    pointer-events: none;
+}
+
+/* Estado Bloqueado */
 .badge.locked {
-    filter: grayscale(100%) brightness(0.7);
-    opacity: 0.5;
-    border-color: #64748b;
-    box-shadow: 0 5px 0px rgba(0, 0, 0, 0.4);
+    filter: grayscale(100%);
+    opacity: 0.7;
 }
 
-/* Estado Desbloqueado: Medalla de Oro Brillante */
+/* Estado Desbloqueado: ORO MACIZO REALISTA */
 .badge.unlocked {
     filter: grayscale(0%);
     opacity: 1;
-    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    border: 6px solid #f59e0b; /* Borde dorado */
-    box-shadow: 0 8px 0px #b45309, 0 12px 20px rgba(245, 158, 11, 0.4), inset 0 4px 10px rgba(255,255,255,0.8);
-    transform: translateY(-4px);
+    /* Reflejo metálico de oro con gradiente radial */
+    background: radial-gradient(circle at 35% 35%, #fffbeb 0%, #fde68a 20%, #f59e0b 70%, #92400e 100%);
+    border: 5px solid #fbbf24;
+    box-shadow: 
+        inset 0 -5px 15px rgba(146, 64, 14, 0.8), /* Sombra interior para relieve */
+        inset 0 5px 10px rgba(255, 255, 255, 0.9), /* Brillo superior del metal */
+        0 10px 15px rgba(0, 0, 0, 0.4), /* Sombra de caída */
+        0 0 25px rgba(245, 158, 11, 0.5); /* Resplandor dorado externo */
+    transform: scale(1.05); /* Crece ligeramente al ganarla */
 }
 
-/* Icono central (Emblema de la medalla) */
+.badge.unlocked::before {
+    border: 2px dotted rgba(146, 64, 14, 0.4);
+}
+
+/* Icono central (Directo sobre el metal) */
 .badge .icon { 
-    font-size: 2.2rem; 
-    margin-bottom: 5px;
-    background: rgba(255, 255, 255, 0.9);
-    width: 55px;
-    height: 55px;
-    line-height: 55px;
-    border-radius: 50%;
-    border: 2px dashed #d97706;
+    font-size: 2.8rem; 
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 3px 3px rgba(0,0,0,0.25)); /* Sombra para dar volumen al emoji */
 }
 
-/* Textos ajustados al círculo */
+/* Texto con efecto de metal grabado */
 .badge p { 
     font-weight: 900; 
     margin: 0; 
-    color: #1e293b; 
+    color: #78350f; /* Marrón oscuro imitando metal oxidado en la grieta */
     font-size: 11px;
-    line-height: 1.2;
+    line-height: 1.1;
     text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.4); /* Reflejo inferior del tallado */
+    padding: 0 8px;
 }
 
 .badge small { 
-    display: none; /* Ocultamos la descripción larga para mantener el diseño limpio de medalla */
+    display: none; 
 }
-
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
 .badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
 .badge small { color: #64748b; font-size: 12px; }
@@ -381,25 +403,25 @@ main {
 
 /* --- ESCALA PARA LAS MEDALLAS DENTRO DEL PASAPORTE ABIERTO --- */
 .passport-grid .badge {
-    width: 90px;
-    height: 90px;
+    width: 85px;
+    height: 85px;
     padding: 5px;
-    border-width: 4px;
-    border-radius: 50%; /* Asegura que en el pasaporte también sean círculos perfectos */
+    border-width: 3px;
     margin: 5px;
+    box-shadow: 
+        inset 0 -3px 8px rgba(146, 64, 14, 0.8),
+        inset 0 3px 5px rgba(255, 255, 255, 0.9),
+        0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .passport-grid .badge .icon {
-    font-size: 1.2rem;
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    margin-bottom: 3px;
-    border-width: 1px;
+    font-size: 1.6rem;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
 }
 
 .passport-grid .badge p { 
-    font-size: 8px; 
+    font-size: 7.5px; 
 }
 .passport-grid .badge small { display: none; } /* Ocultar texto extra */
 
