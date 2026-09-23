@@ -283,7 +283,13 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
     const userRef = doc(db, "usuarios", userId);
 
     try {
+        // Calculamos el incremento normal
         let nuevoProgreso = progress + progressIncrease;
+       
+        if (completedChallenges == 6 || nuevoProgreso >= 99) {
+            nuevoProgreso = 100;
+        }
+
         if (nuevoProgreso > 100) nuevoProgreso = 100;
 
         await updateDoc(userRef, {
