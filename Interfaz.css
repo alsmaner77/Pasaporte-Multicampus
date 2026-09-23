@@ -271,6 +271,20 @@ main {
     padding: 0 8px;
 }
 
+/* Texto explicativo ajustado al círculo */
+.badge small { 
+    display: block; 
+    text-align: center;
+    width: 85%; /* Evita que el texto toque los bordes curvos */
+    margin: 5px auto 0 auto;
+    font-size: 10px; 
+    line-height: 1.1;
+    color: #78350f; /* Mismo tono de metal oscuro que el título */
+    word-wrap: break-word; /* Fuerza el salto de línea si la palabra es larga */
+    white-space: normal;
+    position: relative;
+    z-index: 2;
+}
 
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
 .badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
@@ -399,13 +413,22 @@ main {
     letter-spacing: 1px;
 }
 
-/* --- ESCALA PARA LAS MEDALLAS DENTRO DEL PASAPORTE ABIERTO --- */
+/* Cuadrícula adaptada para las medallas en el pasaporte */
+.passport-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    align-content: flex-start; /* Fuerza a que se agrupen en la parte superior como los sellos */
+}
+
+/* Escalar las medallas para que encajen en el papel */
 .passport-grid .badge {
     width: 85px;
     height: 85px;
     padding: 5px;
     border-width: 3px;
-    margin: 5px;
+    margin: 0; /* IMPORTANTE: Quita el margen automático que forzaba la vista de columna */
     box-shadow: 
         inset 0 -3px 8px rgba(146, 64, 14, 0.8),
         inset 0 3px 5px rgba(255, 255, 255, 0.9),
