@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasaporte Multicampus</title>
+    <title>Pasaporte Multicampus Tecmilenio</title>
     <link rel="stylesheet" href="Interfaz.css">
     <!-- Inteligencia Artificial para detectar imágenes en el navegador -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
@@ -28,10 +28,10 @@
 <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f7f6;">
     
     <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center;">
-        <h2 id="auth-title" style="color: #003366; margin-bottom: 20px;">Ingreso al Pasaporte</h2>
+        <h2 id="auth-title" style="color: #003366; margin-bottom: 20px;">Acceso a tu Pasaporte Multicampus</h2>
         
         <!-- Formulario Base (Siempre visible) -->
-        <input type="email" id="email" placeholder="Correo institucional" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
+        <input type="email" id="email" placeholder="Correo" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
         <input type="password" id="password" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; outline: none;">
         
         <!-- Campos extra exclusivos para Registro (Ocultos por defecto) -->
@@ -109,12 +109,11 @@
     <div id="app-content" style="display: none;">
         
         <header>
-            <h1>Pasaporte Multicampus</h1>
-            <p>Conecta → Descubre → Colabora → Comparte → Desbloquea</p>
+            <h1>Pasaporte Multicampus Tecmilenio</h1>            
         </header>
 
         <div class="progress-section">
-            <h3>Progreso de la Experiencia (8 Semanas)</h3>
+            <h3>Progreso de la Experiencia</h3>
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill">0%</div>
             </div>
@@ -122,10 +121,10 @@
 
         <nav class="tabs">
             <button class="tab-btn active" onclick="openTab(event, 'retos')">Retos Semanales</button>
-            <button class="tab-btn" onclick="openTab(event, 'mapa')">Mapa y Conexiones</button>
+            <button class="tab-btn" onclick="openTab(event, 'mapa')">Mapa De Tus Conexiones</button>
             <button class="tab-btn" onclick="openTab(event, 'insignias')">Insignias</button>
-            <button class="tab-btn" onclick="openTab(event, 'conexion')">🎲 Descubrir</button>
-            <button class="tab-btn" onclick="openTab(event, 'mensajes')">✉️ Mensajes</button>
+            <button class="tab-btn" onclick="openTab(event, 'conexion')">Crear Conexiones</button>
+            <button class="tab-btn" onclick="openTab(event, 'mensajes')">✉️ Tus Mensajes</button>
             <button class="tab-btn" onclick="openTab(event, 'perfil')">👤 Mi Perfil</button>
         </nav>
 
@@ -134,40 +133,46 @@
         <section id="retos" class="tab-content active">
             <h2>Catálogo de Experiencias</h2>
             <div class="challenge-card" id="reto-1">
-                <h3>Semana 1: Conoce mi ciudad</h3>
-                <p>Rompe la barrera inicial. Preséntate con alguien de tu mismo certificado en otro campus y compartan algo típico de su ciudad.</p>
-                <button onclick="completeChallenge(1, 'México conectado', 20)">Registrar Conexión (Completar)</button>
+                <h3>Reto 1: Conoce mi ciudad</h3>
+                <p>Preséntate con alguien de tu mismo certificado en otro campus y compartan algo típico de su ciudad.</p>
+                <button onclick="completeChallenge(1, 'México conectado', 16.6)">Registrar Conexión (Completar)</button>
             </div>
             
             <div class="challenge-card" id="reto-2">
-                <h3>Semana 2: 10 minutos sin fronteras</h3>
-                <p>Realiza una videollamada de al menos 10 minutos con una persona que no conoces de otro campus.</p>
-                <button onclick="completeChallenge(2, 'Conexión real', 20)">Completar Reto</button>
+                <h3>Reto 2: 10 minutos sin fronteras</h3>
+                <p>Realiza una videollamada de al menos 10 minutos con una persona de otro campus.</p>
+                <button onclick="completeChallenge(2, 'Conexión real', 16.6)">Completar Reto</button>
             </div>
 
             <div class="challenge-card" id="reto-3">
-                <h3>Semana 3: México en un plato</h3>
+                <h3>Reto 3: Si yo fuera un plato...</h3>
                 <p>Usa la cultura local como punto de conexión compartiendo tu comida típica favorita o un platillo familiar.</p>
-                <button onclick="completeChallenge(3, 'Explorador gastronómico',20)">Completar Reto</button>
+                <button onclick="completeChallenge(3, 'Explorador gastronómico',16.6)">Completar Reto</button>
             </div>
 
             <div class="challenge-card" id="reto-4">
-                <h3>Semana 4: Misión Multicampus</h3>
+                <h3>Reto 4: Mision Multicampus</h3>
                 <p>Resuelve un pequeño reto colaborativo en un equipo conformado por personas de distintos campus.</p>
-                <button onclick="completeChallenge(4, 'Equipo Sin Fronteras', 20)">Completar Reto</button>
+                <button onclick="completeChallenge(4, 'Equipo Sin Fronteras', 16.6)">Completar Reto</button>
             </div>
             
             <div class="challenge-card" id="reto-5">
-                <h3>Semana 5: Conecta fuera de tu certificado</h3>
-                <p>Combina conocimientos con estudiantes de otros certificados para proponer una mejora a la experiencia universitaria.</p>
-                <button onclick="completeChallenge(5, 'Sin fronteras', 20)">Completar Reto</button>
+                <h3>Reto 5: Date vuelo</h3>
+                <p>Combina conocimientos con estudiantes de otros certificados y propongan una mejora a la experiencia universitaria.</p>
+                <button onclick="completeChallenge(5, 'Sin fronteras', 16.6)">Completar Reto</button>
+            </div>
+
+            <div class="challenge-card" id="reto-6">
+                <h3>Reto 6: La unión hace la fuerza</h3>
+                <p>Conversa acerca de tus certificados con otros estudiantes de tu misma carrera y compartan lo aprendido.</p>
+                <button onclick="completeChallenge(6, 'Colaborador', 17)">Completar Reto</button>
             </div>
         </section>
 
         <!-- Sección de Mapa y Conexiones -->
         <section id="mapa" class="tab-content">
             <h2>Mi Mapa de Conexiones</h2>
-            <p>Pasa el mouse sobre cada campus para ver cuántos estudiantes has conocido.</p>
+            <p>Interactúa con la ubicación de los campus para ver cuántos estudiantes has conocido.</p>
         
             <!-- Contenedor del Mapa sin padding para que las coordenadas % sean exactas a la imagen -->
             <div class="map-container" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; background-color: transparent; padding: 0;">
@@ -318,11 +323,11 @@
             
             <!-- PESTAÑA: Descubrir (Solo para buscar nuevos compañeros) -->
         <section id="conexion" class="tab-content">
-            <h2>Conexión Aleatoria</h2>
+            <h2>Descubre a tu proximo amigo</h2>
             <div style="text-align: center; padding: 40px; background: white; border-radius: 10px; border: 1px solid #ddd;">
                 <p style="font-size: 16px; margin-bottom: 20px;">Anímate a conocer a alguien nuevo. Te conectaremos con un estudiante de un campus distinto al tuyo para ampliar tu red.</p>
                 <button id="btn-find-partner" style="padding: 15px 30px; background-color: #FFC000; color: #003366; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    🎲 Buscar Nuevo Compañero
+                    Buscar Nuevo Compañero
                 </button>
                 <p id="search-status" style="display: none; color: #003366; margin-top: 15px; font-weight: bold;">Buscando en la base de datos...</p>
             </div>
@@ -330,13 +335,13 @@
 
         <!-- PESTAÑA: Mensajes (Bandeja de entrada y Sala de Chat) -->
         <section id="mensajes" class="tab-content">
-            <h2>Mis Conversaciones</h2>
+            <h2>Tus Chats</h2>
 
             <!-- VISTA 1: Lista de Chats (Bandeja de entrada) -->
             <div id="inbox-view">
                 <ul id="chats-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
                     <li id="empty-chats-msg" style="color: #666; text-align: center; padding: 30px; background: white; border-radius: 8px; border: 1px solid #ddd;">
-                        Aún no tienes mensajes. ¡Ve a la pestaña "Descubrir" para conocer a alguien!
+                        Aún no tienes mensajes. ¡Ve a la pestaña "Crear Conexiones" para conocer a alguien!
                     </li>
                     <!-- Las tarjetas de contacto se inyectarán aquí con JavaScript -->
                 </ul>
