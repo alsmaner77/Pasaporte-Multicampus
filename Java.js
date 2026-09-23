@@ -494,19 +494,34 @@ function cargarBandejaEntrada() {
             return tiempoB - tiempoA;
         });
 
-        // 2. BUSCAMOS LOS DATOS PRIMERO: Recopilamos todas las fotos y perfiles al mismo tiempo
+        
+       // 2. BUSCAMOS LOS DATOS PRIMERO: Recopilamos todas las fotos y perfiles
         const chatsListos = await Promise.all(docsOrdenados.map(async (docSnap) => {
             const chatData = docSnap.data();
             const chatId = docSnap.id;
-            const partnerUid = chatData.participantes.find(uid => uid !== myUid);
-            const partnerRef = doc(db, "usuarios", partnerUid);
-            const partnerSnap = await getDoc(partnerRef);
             
-            return {
-                chatId,
-                chatData,
-                partnerData: partnerSnap.exists() ? partnerSnap.data() : null
-            };
+            // Si es un grupo, fabricamos un perfil virtual para la interfaz
+            if (chatData.isGroup) {
+                return {
+                    chatId,
+                    chatData,
+                    partnerData: { 
+                        correo: `👥 ${chatData.groupName}`, 
+                        campus: `${chatData.participantes.length} miembros`,
+                        foto_perfil: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50'><rect width='50' height='50' fill='%23FF007F'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='20'>👥</text></svg>"
+                    }
+                };
+            } else {
+                // Lógica normal para chats individuales
+                const partnerUid = chatData.participantes.find(uid => uid !== myUid);
+                const partnerRef = doc(db, "usuarios", partnerUid);
+                const partnerSnap = await getDoc(partnerRef);
+                return {
+                    chatId,
+                    chatData,
+                    partnerData: partnerSnap.exists() ? partnerSnap.data() : null
+                };
+            }
         }));
 
         // 3. LIMPIEZA TOTAL: Ahora que tenemos los datos, limpiamos la bandeja justo antes de dibujar
@@ -640,6 +655,7 @@ btnSendMessage.addEventListener('click', async () => {
         await addDoc(mensajesRef, {
             texto: textoGuardado,
             senderId: auth.currentUser.uid,
+            senderEmail: auth.currentUser.email,
             timestamp: serverTimestamp()
         });
 
