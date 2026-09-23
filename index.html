@@ -322,13 +322,32 @@
                     <p id="profile-campus" style="margin: 0; color: #aaa; font-weight: bold;">Cargando campus...</p>
                 </div>
             
-                <h3 style="color: #fff; border-bottom: 2px solid #333; padding-bottom: 8px;">Insignias y Sellos en el Pasaporte</h3>
-                <div id="earned-badges" class="badges-grid" style="margin-bottom: 30px;">
-                    <p id="no-badges-msg" style="color: #888;">Tu pasaporte aún no registra sellos oficiales.</p>
+                       
+                <h3 style="color: #fff; border-bottom: 2px solid #333; padding-bottom: 8px; margin-top: 30px;">Libreta de Pasaporte</h3>
+                
+                <!-- Contenedor del Pasaporte Abierto -->
+                <div class="passport-book">
+                    <!-- Página Izquierda: Insignias -->
+                    <div class="passport-page left-page">
+                        <div class="page-header">VISAS APROBADAS (INSIGNIAS)</div>
+                        <div id="passport-badges-grid" class="passport-grid">
+                            <p id="no-badges-msg" style="color: #888; font-size: 13px;">Tu pasaporte aún no registra insignias oficiales.</p>
+                            <!-- Las medallas se clonarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- Página Derecha: Sellos de Campus -->
+                    <div class="passport-page right-page">
+                        <div class="page-header">SELLOS DE INMIGRACIÓN (CONEXIONES)</div>
+                        <div id="passport-stamps-grid" class="stamps-grid">
+                            <p id="no-stamps-msg" style="color: #888; font-size: 13px;">Aún no tienes sellos de otros campus.</p>
+                            <!-- Los sellos de tinta aparecerán aquí -->
+                        </div>
+                    </div>
                 </div>
-            
-                <div style="text-align: center; border-top: 2px solid #222; padding-top: 25px;">
-                    <button id="btn-logout" style="padding: 12px 25px; background-color: #222; color: #FF007F; border: 2px solid #FF007F; border-radius: 8px; cursor: pointer; font-weight: bold;">Cerrar Sesión</button>
+                
+                <div style="text-align: center; border-top: 2px solid #222; padding-top: 25px; margin-top: 30px;">
+                    <button id="btn-logout" style="padding: 12px 25px; background-color: #222; color: #FF007F; border: 2px solid #FF007F; border-radius: 8px; cursor: pointer; font-weight: bold;">Cerrar Sesión 🔒</button>
                 </div>
             </section>
         </main>
