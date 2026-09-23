@@ -264,7 +264,29 @@
 
             <!-- PESTAÑA: Mensajes -->
             <section id="mensajes" class="tab-content">
-                <h2>Bandeja de Entrada</h2>
+                <!-- Encabezado con botón de Grupo -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Tus Chats y Grupos</h2>
+                <button id="btn-open-group-modal" style="background-color: #FF007F; color: white; border: 2px solid #000; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 2px 2px 0px #fff;">➕ Crear Grupo</button>
+            </div>
+
+            <!-- Modal para Crear Grupo (Oculto por defecto) -->
+            <div id="group-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                <div style="background: #161622; border: 3px solid #00FFCC; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(0,255,204,0.3); color: white;">
+                    <h3 style="margin-top: 0; color: #00FFCC;">Armar Escuadrón Multicampus</h3>
+                    <input type="text" id="group-name" placeholder="Nombre del grupo (ej. Hackathon 2026)" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #0f0f1a; border: 2px solid #333; color: white; border-radius: 8px; box-sizing: border-box; outline: none;">
+                    
+                    <p style="font-size: 14px; color: #aaa; margin-bottom: 10px;">Selecciona a tus conexiones:</p>
+                    <div id="group-connections-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; border: 2px solid #333; padding: 10px; border-radius: 8px; background: #0f0f1a; display: flex; flex-direction: column; gap: 8px;">
+                        <p style="color: #666; font-size: 12px; text-align: center;">Cargando conexiones...</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button id="btn-cancel-group" style="background-color: #222; color: #FF007F; border: 2px solid #FF007F; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold;">Cancelar</button>
+                        <button id="btn-confirm-group" style="background-color: #00FFCC; color: #000; border: 2px solid #000; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 2px 2px 0px #fff;">Crear Grupo</button>
+                    </div>
+                </div>
+            </div>
 
                 <div id="inbox-view">
                     <ul id="chats-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
