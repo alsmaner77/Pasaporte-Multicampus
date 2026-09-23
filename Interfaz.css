@@ -185,97 +185,85 @@ main {
 /* Contenedor general de la cuadrícula de insignias */
 .badges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 25px;
     justify-items: center;
-    align-items: center;
 }
 
-/* Apariencia de Medalla Circular estilo Scout */
+/* Apariencia de Medalla / Parche de Scout */
 .badge {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    width: 180px;
-    height: 180px;
-    padding: 20px;
-    border-radius: 50%; /* ¡Esto las vuelve perfectamente circulares! */
+    width: 100%;
+    max-width: 220px;
+    padding: 25px 15px;
+    border-radius: 20px;
     text-align: center;
-    border: 5px solid #cbd5e1; /* Borde metálico base */
-    box-shadow: 0 10px 0px rgba(0, 0, 0, 0.3), 0 15px 25px rgba(0,0,0,0.25);
+    border: 4px solid #cbd5e1; /* Borde metálico base */
+    box-shadow: 0 8px 0px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
-    margin: 10px auto;
 }
 
-/* Efecto de brillo metálico superior curvado */
+/* Efecto de brillo metálico superior */
 .badge::before {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 15px;
-    right: 15px;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 40%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
-    border-radius: 50% 50% 0 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+    border-radius: 16px 16px 0 0;
     pointer-events: none;
 }
 
-/* Estado Bloqueado: Medalla oculta o de bronce oscuro */
+/* Estado Bloqueado: Apariencia de medalla oculta o de bronce opaco */
 .badge.locked {
-    filter: grayscale(100%) brightness(0.6);
+    filter: grayscale(100%) brightness(0.7);
     opacity: 0.35;
     border-color: #475569;
-    box-shadow: 0 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 0px rgba(0, 0, 0, 0.5);
 }
 
-/* Estado Desbloqueado: Medalla de Oro oficial */
+/* Estado Desbloqueado: Medalla con brillo de Bronce, Plata u Oro institucionales */
 .badge.unlocked {
     filter: grayscale(0%);
     opacity: 1;
     background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    border: 5px solid #f59e0b; /* Borde dorado brillante */
-    box-shadow: 0 10px 0px #b45309, 0 15px 30px rgba(245, 158, 11, 0.45);
-    transform: translateY(-4px);
+    border: 4px solid #f59e0b; /* Borde dorado de medalla */
+    box-shadow: 0 8px 0px #b45309, 0 10px 25px rgba(245, 158, 11, 0.4);
+    transform: translateY(-3px);
 }
 
-/* Icono central dentro de la medalla circular */
+/* Contenedor del icono tipo emblema circular */
 .badge .icon { 
-    font-size: 2.5rem; 
-    margin-bottom: 5px;
-    background: rgba(255, 255, 255, 0.8);
-    width: 60px;
-    height: 60px;
-    line-height: 60px;
+    font-size: 3rem; 
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    width: 75px;
+    height: 75px;
+    line-height: 75px;
     border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
     border: 2px dashed #d97706;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Ajuste de textos para que encajen de forma limpia en el círculo */
 .badge p { 
     font-weight: 800; 
-    margin: 2px 0; 
+    margin: 0 0 6px 0; 
     color: #1e293b; 
-    font-size: 13px;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
+    font-size: 15px;
+    letter-spacing: 0.5px;
 }
 
 .badge small { 
     color: #64748b; 
-    font-size: 9px; 
-    line-height: 1.1;
+    font-size: 11px; 
+    line-height: 1.2;
     display: block;
-    padding: 0 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
 }
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
 .badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
