@@ -631,12 +631,20 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
                 contenidoMensaje = `<img src="${msgData.imagenUrl}" style="max-width: 200px; border-radius: 8px; margin-top: 5px; display: block;">`;
             }
             
+            
             // Inyectamos el contenido en el globo con el nombre (si aplica)
             msgDiv.innerHTML = remitenteHTML + contenidoMensaje;
-        
+            
+            // AGREGA EL GLOBO A LA PANTALLA (Esta línea se había borrado)
+            chatMessagesContainer.appendChild(msgDiv);
+            
+        }); // 1. Cierra el snapshot.forEach
+
         // Hacer scroll automático hacia abajo
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-    });
+        
+    }); 
+}; 
 
 
 // Lógica para ENVIAR mensajes
