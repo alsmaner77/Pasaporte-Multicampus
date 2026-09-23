@@ -716,6 +716,7 @@ btnVideoCall.addEventListener('click', async () => {
         await addDoc(mensajesRef, {
             texto: `📹 ¡He iniciado una videollamada! Presiona el botón verde de "Llamar" arriba para unirte.`,
             senderId: auth.currentUser.uid,
+            senderEmail: auth.currentUser.email,
             timestamp: serverTimestamp()
         });
 
@@ -889,6 +890,7 @@ async function analizarYEnviarImagen(base64Original) {
                 texto: "📷 Imagen", 
                 imagenUrl: base64Comprimida, // Guardamos la versión ligera
                 senderId: auth.currentUser.uid,
+                senderEmail: auth.currentUser.email,
                 timestamp: serverTimestamp()
             });
 
@@ -942,17 +944,19 @@ let stream = null;
 btnTakePhoto.onclick = async (e) => {
     e.preventDefault();
 
-    // Detección estricta para celulares y tablets
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        // EN CELULARES: Abre directamente la cámara nativa del teléfono.
-        // El sistema operativo móvil gestiona sus propios permisos automáticamente.
+    // Detección estricta MEJORADA: Comprueba el navegador, si hay pantalla táctil, o si la pantalla es de celular
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isSmallScreen = window.innerWidth <= 800;
+
+    // Si cumple cualquiera de estas condiciones, es un dispositivo móvil
+    if (isMobileUA || isTouchDevice || isSmallScreen) {
+        // Abre directamente la cámara nativa del teléfono (evita el cuadro negro)
         chatCameraInput.click();
-        return; // IMPORTANTE: El 'return' hace que el código se detenga aquí y NO abra el marco negro de PC.
+        return; // Detiene la ejecución aquí
     }
 
-    // EN COMPUTADORAS: Si no es móvil, pide permiso y abre el marco web.
+    // EN COMPUTADORAS (Escritorio sin pantalla táctil):
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         webcamVideo.srcObject = stream;
