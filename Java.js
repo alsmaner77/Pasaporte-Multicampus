@@ -228,6 +228,20 @@ onAuthStateChanged(auth, async (user) => {
                                 badge.classList.add("unlocked");
                             }
                         }
+                        // --- CLONAR INSIGNIA AL PASAPORTE ---
+                        const passportBadgesGrid = document.getElementById("passport-badges-grid");
+                        const noBadgesMsg = document.getElementById("no-badges-msg");
+                        if (passportBadgesGrid) {
+                            if (noBadgesMsg) noBadgesMsg.style.display = 'none';
+                            if (!document.getElementById(`clon-${badgeName}`)) {
+                                const badgeOriginal = document.getElementById(`badge-${badgeName}`);
+                                if (badgeOriginal) {
+                                    const clon = badgeOriginal.cloneNode(true);
+                                    clon.id = `clon-${badgeName}`;
+                                    passportBadgesGrid.appendChild(clon);
+                                }
+                            }
+                        }
 
                         // 3. Restaurar la conexión en el mapa
                         const newConnection = document.createElement("li");
@@ -309,6 +323,21 @@ window.completeChallenge = async function(challengeId, badgeName, progressIncrea
         if (badge) {
             badge.classList.remove("locked");
             badge.classList.add("unlocked");
+        }
+
+        // --- CLONAR INSIGNIA AL PASAPORTE ---
+        const passportBadgesGrid = document.getElementById("passport-badges-grid");
+        const noBadgesMsg = document.getElementById("no-badges-msg");
+        if (passportBadgesGrid) {
+            if (noBadgesMsg) noBadgesMsg.style.display = 'none';
+            if (!document.getElementById(`clon-${badgeName}`)) {
+                const badgeOriginal = document.getElementById(`badge-${badgeName}`);
+                if (badgeOriginal) {
+                    const clon = badgeOriginal.cloneNode(true);
+                    clon.id = `clon-${badgeName}`;
+                    passportBadgesGrid.appendChild(clon);
+                }
+            }
         }
 
         progress = nuevoProgreso;
