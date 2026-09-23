@@ -181,90 +181,77 @@ main {
 }
 
 /* Insignias estilo Sellos Postales */
+/* --- APARIENCIA DE MEDALLAS CIRCULARES --- */
 
-/* Contenedor general de la cuadrícula de insignias */
 .badges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 25px;
     justify-items: center;
 }
 
-/* Apariencia de Medalla / Parche de Scout */
+/* Medalla Base */
 .badge {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    width: 100%;
-    max-width: 220px;
-    padding: 25px 15px;
-    border-radius: 20px;
+    width: 150px; /* Ancho y alto deben ser iguales para un círculo perfecto */
+    height: 150px;
+    padding: 15px;
+    border-radius: 50%; /* Esto las hace perfectamente redondas */
     text-align: center;
-    border: 4px solid #cbd5e1; /* Borde metálico base */
-    box-shadow: 0 8px 0px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0,0,0,0.2);
+    border: 6px solid #cbd5e1; /* Borde metálico grueso */
+    box-shadow: 0 8px 0px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(255,255,255,0.7);
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
 }
 
-/* Efecto de brillo metálico superior */
-.badge::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 40%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
-    border-radius: 16px 16px 0 0;
-    pointer-events: none;
-}
-
-/* Estado Bloqueado: Apariencia de medalla oculta o de bronce opaco */
+/* Estado Bloqueado: Medalla de plomo opaca */
 .badge.locked {
     filter: grayscale(100%) brightness(0.7);
-    opacity: 0.35;
-    border-color: #475569;
-    box-shadow: 0 4px 0px rgba(0, 0, 0, 0.5);
+    opacity: 0.5;
+    border-color: #64748b;
+    box-shadow: 0 5px 0px rgba(0, 0, 0, 0.4);
 }
 
-/* Estado Desbloqueado: Medalla con brillo de Bronce, Plata u Oro institucionales */
+/* Estado Desbloqueado: Medalla de Oro Brillante */
 .badge.unlocked {
     filter: grayscale(0%);
     opacity: 1;
     background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    border: 4px solid #f59e0b; /* Borde dorado de medalla */
-    box-shadow: 0 8px 0px #b45309, 0 10px 25px rgba(245, 158, 11, 0.4);
-    transform: translateY(-3px);
+    border: 6px solid #f59e0b; /* Borde dorado */
+    box-shadow: 0 8px 0px #b45309, 0 12px 20px rgba(245, 158, 11, 0.4), inset 0 4px 10px rgba(255,255,255,0.8);
+    transform: translateY(-4px);
 }
 
-/* Contenedor del icono tipo emblema circular */
+/* Icono central (Emblema de la medalla) */
 .badge .icon { 
-    font-size: 3rem; 
-    margin-bottom: 12px;
-    background: rgba(255, 255, 255, 0.6);
-    width: 75px;
-    height: 75px;
-    line-height: 75px;
+    font-size: 2.2rem; 
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    width: 55px;
+    height: 55px;
+    line-height: 55px;
     border-radius: 50%;
-    margin-left: auto;
-    margin-right: auto;
     border: 2px dashed #d97706;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
 }
 
+/* Textos ajustados al círculo */
 .badge p { 
-    font-weight: 800; 
-    margin: 0 0 6px 0; 
+    font-weight: 900; 
+    margin: 0; 
     color: #1e293b; 
-    font-size: 15px;
-    letter-spacing: 0.5px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-transform: uppercase;
 }
 
 .badge small { 
-    color: #64748b; 
-    font-size: 11px; 
-    line-height: 1.2;
-    display: block;
+    display: none; /* Ocultamos la descripción larga para mantener el diseño limpio de medalla */
 }
+
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
 .badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
 .badge small { color: #64748b; font-size: 12px; }
@@ -392,30 +379,28 @@ main {
     letter-spacing: 1px;
 }
 
-/* Cuadrícula adaptada para las medallas en el pasaporte */
-.passport-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-/* Escalar las medallas para que encajen en el papel */
+/* --- ESCALA PARA LAS MEDALLAS DENTRO DEL PASAPORTE ABIERTO --- */
 .passport-grid .badge {
-    width: 100px;
-    height: 100px;
-    padding: 10px;
-    border-width: 3px;
+    width: 90px;
+    height: 90px;
+    padding: 5px;
+    border-width: 4px;
+    border-radius: 50%; /* Asegura que en el pasaporte también sean círculos perfectos */
     margin: 5px;
 }
+
 .passport-grid .badge .icon {
-    font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    margin-bottom: 5px;
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 3px;
+    border-width: 1px;
 }
-.passport-grid .badge p { font-size: 10px; white-space: normal; line-height: 1.1; }
+
+.passport-grid .badge p { 
+    font-size: 8px; 
+}
 .passport-grid .badge small { display: none; } /* Ocultar texto extra */
 
 /* --- ESTILOS DE SELLOS DE TINTA --- */
