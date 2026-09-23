@@ -821,7 +821,7 @@ async function actualizarMapaConexiones() {
 
 // --- SISTEMA DE IMÁGENES, IA Y CÁMARA ---
 
-// 1. Función para comprimir imágenes antes de enviarlas (Evita fondos negros en transparencias)
+// 1. Función para comprimir imágenes antes de enviarlas (Evita el límite de 1MB de Firebase)
 function comprimirImagen(base64Str, maxWidth = 800) {
     return new Promise((resolve) => {
         let img = new Image();
@@ -840,15 +840,9 @@ function comprimirImagen(base64Str, maxWidth = 800) {
             canvas.width = width;
             canvas.height = height;
             let ctx = canvas.getContext('2d');
-
-            // --- RELLENAR FONDO BLANCO ---
-            // Esto evita que las transparencias o PNGs se conviertan en bloques negros al pasarlos a JPEG
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Exportar como JPEG al 70% de calidad
+            // Exportar como JPEG al 70% de calidad (Súper ligero)
             resolve(canvas.toDataURL('image/jpeg', 0.7)); 
         };
     });
