@@ -906,3 +906,7 @@ document.getElementById('btn-capture-webcam').onclick = (e) => {
     analizarYEnviarImagen(fotoBase64);
 };
 
+// Conectar ambos inputs ocultos a la misma función maestra
+chatImgInput.addEventListener('change', procesarImagenParaChat);
+chatCameraInput.addEventListener('change', procesarImagenParaChat);
+
