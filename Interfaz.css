@@ -342,30 +342,33 @@ main {
     visibility: visible;
 }
 
-/* --- ESTILOS DEL PASAPORTE ABIERTO --- */
+/* --- PASAPORTE ABIERTO DINÁMICO --- */
 .passport-book {
     display: flex;
     flex-direction: row;
     width: 100%;
     margin: 20px auto;
-    background-color: #005035; /* Verde Bandera oscuro (Cubierta) */
-    border-radius: 10px;
-    padding: 12px 10px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.6);
-    gap: 4px; /* Simula el doblez central o costura */
+    background-color: #005035; /* Verde Bandera de la cubierta */
+    border-radius: 12px;
+    padding: 14px 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.6);
+    gap: 6px; 
+    transition: all 0.4s ease-in-out; /* Animación fluida de expansión */
 }
 
-/* Páginas de papel */
+/* Páginas de papel con altura flexible */
 .passport-page {
     flex: 1;
-    background-color: #fdfbf7; /* Color papel marfil */
+    background-color: #fdfbf7;
     background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
-    background-size: 15px 15px; /* Textura tipo marca de agua */
-    border-radius: 4px;
-    padding: 15px;
-    min-height: 280px;
+    background-size: 15px 15px;
+    border-radius: 6px;
+    padding: 18px;
+    min-height: 260px;
+    height: auto; /* Permite crecer conforme hay más sellos */
     position: relative;
     overflow: hidden;
+    transition: height 0.4s ease-in-out;
 }
 
 /* Sombras en el centro para simular la encuadernación */
