@@ -795,7 +795,7 @@ async function analizarYEnviarImagen(base64Original) {
                     const myUserRef = doc(db, "usuarios", auth.currentUser.uid);
                     const myUserSnap = await getDoc(myUserRef);
                     if (myUserSnap.exists() && (!myUserSnap.data().retos_completados || !myUserSnap.data().retos_completados[3])) {
-                        await window.completeChallenge(3, "México en un plato", 12.5);
+                        await window.completeChallenge(3, "Explorador gastronómico", 12.5);
                     }
                 }
             }
