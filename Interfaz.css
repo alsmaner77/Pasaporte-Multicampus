@@ -1,9 +1,9 @@
 :root {
-    --primary-color: #00FFCC; /* Turquesa Neón / Identidad digital */
-    --secondary-color: #FF007F; /* Magenta vibrante */
-    --accent-color: #FFC000; /* Amarillo eléctrico */
-    --bg-color: #0f0f1a; /* Fondo espacio oscuro */
-    --card-bg: #161622; /* Tarjetas oscuras texturizadas */
+    --primary-color: #054e42;   /* Verde esmeralda institucional oficial de Tecmilenio */
+    --secondary-color: #00b074; /* Verde menta brillante oficial para acentos y progreso */
+    --accent-color: #00d292;    /* Verde claro vibrante para llamadas a la acción */
+    --bg-color: #0b1f1c;        /* Fondo oscuro con matiz verdoso institucional muy elegante */
+    --card-bg: #132b26;         /* Tarjetas con tono oscuro institucional */
     --text-color: #ffffff;
 }
 
