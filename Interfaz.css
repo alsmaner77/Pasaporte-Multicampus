@@ -271,9 +271,7 @@ main {
     padding: 0 8px;
 }
 
-.badge small { 
-    display: none; 
-}
+
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
 .badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
 .badge small { color: #64748b; font-size: 12px; }
