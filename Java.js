@@ -637,7 +637,7 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
         // Hacer scroll automático hacia abajo
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
     });
-};
+
 
 // Lógica para ENVIAR mensajes
 btnSendMessage.addEventListener('click', async () => {
