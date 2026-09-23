@@ -1,39 +1,68 @@
 :root {
-    --primary-color: #0d5c4f;   /* Verde institucional profundo pero elegante */
-    --secondary-color: #00b074; /* Verde brillante para indicadores de éxito y progreso */
-    --accent-color: #FFC000;    /* Amarillo vibrante estilo app moderna para llamadas de atención */
-    --bg-color: #12181f;        /* Fondo oscuro moderno (tipo pizarra/grafito) */
-    --card-bg: #ffffff;         /* Tarjetas totalmente blancas para máxima legibilidad */
-    --text-color: #1a1a1a;      /* Texto oscuro bien definido para leer sin esfuerzo */
+    --primary-color: #0d5c4f;   /* Verde institucional profundo */
+    --secondary-color: #00b074; /* Verde brillante para indicadores de éxito */
+    --accent-color: #FFC000;    /* Amarillo vibrante para llamadas de atención */
+    --bg-color: #0f0f1a;        /* Fondo oscuro moderno */
+    --card-bg: #ffffff;         /* Tarjetas blancas para máxima legibilidad */
+    --text-color: #1a1a1a;      /* Texto oscuro bien definido */
 }
 
 body {
     font-family: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
     background-color: var(--bg-color);
-    color: #f1f5f9; /* Texto general claro sobre fondo oscuro */
+    color: #f1f5f9;
     margin: 0;
     padding: 0;
 }
 
-/* Cabecera con contraste limpio */
+/* Cabecera con dimensiones amplias y estilo institucional */
 .passport-header {
     background: linear-gradient(135deg, #093830 0%, #0d5c4f 100%);
     color: white;
     text-align: center;
     padding: 2.5rem 1rem;
     border-bottom: 4px solid var(--accent-color);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.passport-stamp {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: var(--accent-color);
+    color: #000;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 2px dashed #000;
+    transform: rotate(5deg);
 }
 
 .passport-header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 2px;
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Barra de progreso destacada */
+.passport-header p { 
+    margin: 8px 0 0 0; 
+    font-size: 1rem; 
+    color: #e2e8f0; 
+}
+
+.progress-section {
+    max-width: 800px;
+    margin: 25px auto;
+    padding: 0 20px;
+}
+
 .progress-bar {
     background-color: #e2e8f0;
-    border-radius: 10px;
+    border-radius: 8px;
     width: 100%;
     height: 24px;
     overflow: hidden;
@@ -42,32 +71,41 @@ body {
 
 .progress-fill {
     background: linear-gradient(90deg, var(--secondary-color), #38bdf8);
+    height: 100%;
+    width: 0%;
+    text-align: center;
     color: #000000;
-    font-weight: bold;
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 22px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Pestañas de navegación súper legibles */
+/* Pestañas de navegación con dimensiones originales y estilo claro/oscuro */
 .tabs {
     display: flex;
     justify-content: center;
-    background-color: #1e293b;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    background-color: #1a1a2e;
+    border-bottom: 2px solid #222;
+    overflow-x: auto;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 16px 24px;
+    padding: 15px 22px;
     font-size: 0.95rem;
     cursor: pointer;
     font-weight: 700;
     color: #94a3b8;
     border-bottom: 3px solid transparent;
+    transition: 0.3s;
+    white-space: nowrap;
 }
 
 .tab-btn:hover {
     color: #ffffff;
-    background-color: rgba(255,255,200,0.03);
 }
 
 .tab-btn.active {
@@ -76,49 +114,68 @@ body {
     border-bottom: 3px solid var(--secondary-color);
 }
 
-/* Tarjetas de retos con fondo blanco y tipografía de alto contraste */
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 20px 50px;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tarjetas de retos con dimensiones originales y tarjetas blancas legibles */
 .challenge-card {
     background: var(--card-bg);
-    padding: 24px;
+    padding: 22px;
     border-radius: 12px;
     margin-bottom: 18px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    border: 2px solid #cbd5e1;
     border-left: 6px solid var(--primary-color);
-    color: var(--text-color); /* Texto negro nítido */
+    color: var(--text-color);
+    transition: transform 0.2s;
+}
+
+.challenge-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
 }
 
 .challenge-card h3 {
-    color: var(--primary-color);
     margin-top: 0;
+    color: var(--primary-color);
 }
 
 .challenge-card p {
-    color: #4b5563; /* Gris oscuro para el cuerpo del texto */
-    font-size: 15px;
+    color: #4b5563;
+    font-size: 14px;
 }
 
-/* Botones principales llamativos */
 .challenge-card button {
     background-color: var(--primary-color);
     color: white;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 8px;
+    border: 2px solid #093830;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.1s;
+    font-weight: 900;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+    transition: 0.1s;
 }
 
 .challenge-card button:hover {
     background-color: #093830;
-    transform: translateY(-1px);
 }
 
 .challenge-card button:disabled {
-    background-color: #222 !important;
-    color: #555 !important;
-    border-color: #444;
+    background-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    border-color: #cbd5e1;
     box-shadow: none;
     cursor: not-allowed;
 }
@@ -135,34 +192,35 @@ body {
     padding: 22px;
     border-radius: 15px;
     text-align: center;
-    border: 2px solid #333;
-    box-shadow: 4px 4px 0px rgba(255, 0, 127, 0.2);
+    border: 2px solid #cbd5e1;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+    color: var(--text-color);
     transition: all 0.3s ease;
 }
 
 .badge.locked {
     filter: grayscale(100%);
-    opacity: 0.3;
-    border-color: #222;
+    opacity: 0.4;
+    border-color: #cbd5e1;
 }
 
 .badge.unlocked {
     filter: grayscale(0%);
     opacity: 1;
     border: 2px solid var(--secondary-color);
-    background: linear-gradient(135deg, #161622 0%, #22162b 100%);
-    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 176, 116, 0.25);
 }
 
 .badge .icon { font-size: 3.2rem; margin-bottom: 10px; }
-.badge p { font-weight: bold; margin: 0 0 5px 0; color: #fff; }
-.badge small { color: #aaa; font-size: 12px; }
+.badge p { font-weight: bold; margin: 0 0 5px 0; color: #1a1a1a; }
+.badge small { color: #64748b; font-size: 12px; }
 
 .map-container {
     background: var(--card-bg);
     padding: 20px;
     border-radius: 15px;
-    border: 2px solid #333;
+    border: 2px solid #cbd5e1;
 }
 
 #connections-list {
@@ -172,9 +230,10 @@ body {
 
 #connections-list li {
     padding: 12px;
-    border-bottom: 1px solid #222;
-    color: #ccc;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
 }
+
 #connections-list li::before {
     content: "🛸 ";
 }
@@ -184,7 +243,7 @@ body {
     position: absolute;
     width: 14px;
     height: 14px;
-    background-color: #444;
+    background-color: #94a3b8;
     border: 2px solid white;
     border-radius: 50%;
     transform: translate(-50%, -50%);
@@ -194,15 +253,15 @@ body {
 }
 
 .campus-pin.active {
-    background-color: var(--primary-color);
-    box-shadow: 0 0 12px 4px var(--primary-color);
+    background-color: var(--secondary-color);
+    box-shadow: 0 0 12px 4px var(--secondary-color);
     animation: pulse 1.8s infinite;
 }
 
 @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.8); }
-    70% { box-shadow: 0 0 0 12px rgba(0, 255, 204, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(0, 176, 116, 0.8); }
+    70% { box-shadow: 0 0 0 12px rgba(0, 176, 116, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 176, 116, 0); }
 }
 
 .pin-tooltip {
@@ -211,8 +270,8 @@ body {
     left: 50%;
     transform: translateX(-50%);
     background-color: #0f0f1a;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+    color: #00FFCC;
+    border: 1px solid #00FFCC;
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 11px;
