@@ -611,30 +611,28 @@ window.abrirSalaDeChat = function(chatId, partnerData) {
             msgDiv.style.borderRadius = "15px";
             msgDiv.style.wordWrap = "break-word";
 
-            // Diferenciar visualmente mis mensajes de los del compañero
+            // Diferenciar visualmente mis mensajes de los del compañero/grupo
+            let remitenteHTML = "";
             if (esMio) {
                 msgDiv.style.alignSelf = "flex-end";
-                msgDiv.style.backgroundColor = "#00CC99"; // Tu color secundario
-                msgDiv.style.color = "white";
+                msgDiv.style.backgroundColor = "#00FFCC"; 
+                msgDiv.style.color = "#121212";
             } else {
                 msgDiv.style.alignSelf = "flex-start";
-                msgDiv.style.backgroundColor = "#ffffff";
-                msgDiv.style.border = "1px solid #ddd";
-                msgDiv.style.color = "#333333";
+                msgDiv.style.backgroundColor = "#161622";
+                msgDiv.style.border = "1px solid #333";
+                msgDiv.style.color = "#ffffff";
+                // En grupos, mostrar el nombre del que envió el mensaje
+                remitenteHTML = `<div style="font-size: 10px; color: #FF007F; margin-bottom: 5px; font-weight: bold;">${msgData.senderEmail || 'Conexión'}</div>`;
             }
 
-            // CORRECCIÓN: Usar msgData y msgDiv correctamente
             let contenidoMensaje = msgData.texto;
-            
-            // Si el mensaje tiene una imagen, la mostramos
             if (msgData.imagenUrl) {
                 contenidoMensaje = `<img src="${msgData.imagenUrl}" style="max-width: 200px; border-radius: 8px; margin-top: 5px; display: block;">`;
             }
             
-            // Inyectamos el contenido en el globo
-            msgDiv.innerHTML = contenidoMensaje;
-            chatMessagesContainer.appendChild(msgDiv);
-        });
+            // Inyectamos el contenido en el globo con el nombre (si aplica)
+            msgDiv.innerHTML = remitenteHTML + contenidoMensaje;
         
         // Hacer scroll automático hacia abajo
         chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
@@ -982,3 +980,116 @@ document.getElementById('btn-capture-webcam').onclick = (e) => {
     // Enviar a procesar
     analizarYEnviarImagen(fotoBase64);
 };
+
+    // --- LÓGICA DE GRUPOS MULTICAMPUS ---
+const btnOpenGroupModal = document.getElementById('btn-open-group-modal');
+const groupModal = document.getElementById('group-modal');
+const btnCancelGroup = document.getElementById('btn-cancel-group');
+const btnConfirmGroup = document.getElementById('btn-confirm-group');
+const groupConnectionsList = document.getElementById('group-connections-list');
+const groupNameInput = document.getElementById('group-name');
+
+btnOpenGroupModal.addEventListener('click', async () => {
+    if (!auth.currentUser) return;
+    groupModal.style.display = 'flex';
+    groupConnectionsList.innerHTML = '<p style="color:#00FFCC; text-align:center;">Buscando conexiones...</p>';
+    groupNameInput.value = '';
+
+    try {
+        const myUid = auth.currentUser.uid;
+        const chatsRef = collection(db, "chats");
+        const misChatsQ = query(chatsRef, where("participantes", "array-contains", myUid));
+        const misChatsSnap = await getDocs(misChatsQ);
+
+        let amigos = [];
+        // Filtramos solo chats individuales para obtener la lista de contactos
+        for (const docSnap of misChatsSnap.docs) {
+            const data = docSnap.data();
+            if (!data.isGroup) {
+                const partnerUid = data.participantes.find(uid => uid !== myUid);
+                if(partnerUid && !amigos.find(a => a.uid === partnerUid)) {
+                    const pSnap = await getDoc(doc(db, "usuarios", partnerUid));
+                    if (pSnap.exists()) {
+                        amigos.push({ uid: partnerUid, email: pSnap.data().correo });
+                    }
+                }
+            }
+        }
+
+        groupConnectionsList.innerHTML = '';
+        if (amigos.length === 0) {
+            groupConnectionsList.innerHTML = '<p style="color:#FF007F; font-size: 13px;">Necesitas conectar con alguien primero usando el Radar.</p>';
+            return;
+        }
+
+        // Crear checkboxes para cada amigo
+        amigos.forEach(amigo => {
+            const label = document.createElement('label');
+            label.style.display = 'flex';
+            label.style.alignItems = 'center';
+            label.style.gap = '10px';
+            label.style.cursor = 'pointer';
+            label.style.color = '#fff';
+            label.style.fontSize = '14px';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = amigo.uid;
+            checkbox.className = 'group-checkbox';
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(amigo.email));
+            groupConnectionsList.appendChild(label);
+        });
+
+    } catch (error) {
+        console.error("Error cargando amigos:", error);
+    }
+});
+
+btnCancelGroup.addEventListener('click', () => {
+    groupModal.style.display = 'none';
+});
+
+btnConfirmGroup.addEventListener('click', async () => {
+    const groupName = groupNameInput.value.trim();
+    if (!groupName) {
+        alert("Ponle un nombre a tu escuadrón.");
+        return;
+    }
+
+    const checkboxes = document.querySelectorAll('.group-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert("Selecciona al menos a un compañero.");
+        return;
+    }
+
+    const participantesUids = [auth.currentUser.uid];
+    checkboxes.forEach(box => participantesUids.push(box.value));
+
+    try {
+        btnConfirmGroup.disabled = true;
+        btnConfirmGroup.textContent = "Creando...";
+
+        const chatRef = collection(db, "chats");
+        await addDoc(chatRef, {
+            participantes: participantesUids,
+            isGroup: true,
+            groupName: groupName,
+            ultimo_mensaje: "🚀 Grupo creado",
+            fecha_actualizacion: serverTimestamp()
+        });
+
+        groupModal.style.display = 'none';
+        btnConfirmGroup.disabled = false;
+        btnConfirmGroup.textContent = "Crear Grupo";
+        
+    } catch (error) {
+        console.error("Error creando grupo:", error);
+        alert("Error al crear el escuadrón.");
+        btnConfirmGroup.disabled = false;
+        btnConfirmGroup.textContent = "Crear Grupo";
+    }
+});
+
+    
