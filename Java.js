@@ -689,12 +689,10 @@ async function actualizarMapaConexiones() {
     const myUid = auth.currentUser.uid;
 
     try {
-        // 1. Obtener todos los chats del usuario actual
         const chatsRef = collection(db, "chats");
         const misChatsQ = query(chatsRef, where("participantes", "array-contains", myUid));
         const misChatsSnap = await getDocs(misChatsQ);
 
-        // 2. Extraer los UIDs de los compañeros
         let partnerUids = [];
         misChatsSnap.forEach(docSnap => {
             const participantes = docSnap.data().participantes;
@@ -702,43 +700,76 @@ async function actualizarMapaConexiones() {
             if (partnerUid) partnerUids.push(partnerUid);
         });
 
-        // 3. Obtener el campus de cada compañero y contarlos
-        let conteoCampus = {}; // Ejemplo: { "Monterrey": 2, "Querétaro": 1 }
+        let conteoCampus = {}; 
         
         for (const uid of partnerUids) {
             const partnerRef = doc(db, "usuarios", uid);
             const partnerSnap = await getDoc(partnerRef);
-            
             if (partnerSnap.exists()) {
                 const campus = partnerSnap.data().campus;
-                if (campus) {
-                    conteoCampus[campus] = (conteoCampus[campus] || 0) + 1;
-                }
+                if (campus) conteoCampus[campus] = (conteoCampus[campus] || 0) + 1;
             }
         }
 
-        // 4. Actualizar visualmente los pines en el mapa
+        // 1. Iluminar pines del mapa
         const pines = document.querySelectorAll('.campus-pin');
-        
         pines.forEach(pin => {
             const nombreCampus = pin.getAttribute('data-campus');
             const spanConteo = pin.querySelector('.count');
-            
-            // Si el campus está en nuestro conteo (mayor a 0)
             if (conteoCampus[nombreCampus]) {
-                pin.classList.add('active'); // Enciende la luz verde
-                spanConteo.textContent = conteoCampus[nombreCampus]; // Actualiza el número en el tooltip
+                pin.classList.add('active'); 
+                spanConteo.textContent = conteoCampus[nombreCampus]; 
             } else {
-                pin.classList.remove('active'); // Lo mantiene gris
+                pin.classList.remove('active'); 
                 spanConteo.textContent = "0";
             }
         });
 
+        // 2. CREAR SELLOS EN EL PASAPORTE (Perfil)
+        const stampsGrid = document.getElementById("passport-stamps-grid");
+        const noStampsMsg = document.getElementById("no-stamps-msg");
+        
+        if (stampsGrid) {
+            // Limpiar los mensajes y sellos anteriores para evitar duplicados
+            if (noStampsMsg) stampsGrid.appendChild(noStampsMsg);
+            Array.from(stampsGrid.children).forEach(child => {
+                if (child.id !== 'no-stamps-msg') child.remove();
+            });
+
+            const campuses = Object.keys(conteoCampus);
+            
+            if (campuses.length > 0) {
+                if (noStampsMsg) noStampsMsg.style.display = 'none';
+                
+                const coloresSello = ['red', 'blue', 'green']; // Diferentes tintas
+                const fecha = new Date();
+                const fechaStr = `${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}`;
+                
+                campuses.forEach((campus, index) => {
+                    const stampDiv = document.createElement("div");
+                    const colorClase = coloresSello[index % coloresSello.length];
+                    
+                    // Rotación aleatoria entre -25 y 25 grados para dar aspecto de sello de mano
+                    const rotacion = Math.floor(Math.random() * 50) - 25; 
+                    
+                    stampDiv.className = `sello-campus ${colorClase}`;
+                    stampDiv.style.transform = `rotate(${rotacion}deg)`;
+                    
+                    stampDiv.innerHTML = `
+                        <span class="sello-nombre">${campus}</span>
+                        <span class="sello-fecha">${fechaStr}</span>
+                    `;
+                    stampsGrid.appendChild(stampDiv);
+                });
+            } else {
+                if (noStampsMsg) noStampsMsg.style.display = 'block';
+            }
+        }
+
     } catch (error) {
-        console.error("Error al actualizar el mapa:", error);
+        console.error("Error al actualizar el mapa y sellos:", error);
     }
 }
-
 
 
 // --- SISTEMA DE IMÁGENES, IA Y CÁMARA ---
